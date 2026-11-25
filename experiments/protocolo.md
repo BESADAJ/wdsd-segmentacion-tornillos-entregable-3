@@ -4,9 +4,9 @@
 
 Al congelar, la búsqueda de κ (solo val) estaba en curso: su resultado no se conocía. κ lo elige `training/cola_e3.py` aplicando la regla de §4, sin intervención manual.
 
-Quedan **abiertos**, y se registrarán con su propia fecha antes de usarlos:
-- la elección de los 3 conjuntos adicionales (§6);
-- el análisis de potencia con las semillas piloto (§5).
+Quedaban **abiertos**:
+- la elección de los 3 conjuntos adicionales (§6): registrada el 2026-11-25 con el tag `e3-conjuntos`, antes de descargarlos;
+- el análisis de potencia con las semillas piloto (§5): **no se registró antes de las corridas finales**. Se reporta como exploratorio (diferencia mínima detectable), y así se declara.
 
 Ninguno de los dos cambia lo que aquí se fija.
 
@@ -67,9 +67,30 @@ El equipo se compromete con el estándar del E3. Por cómputo (una RTX 3050 de 6
 - **Tamaño del efecto:** δ de Cliff y d de Cohen pareado, con IC.
 - **Potencia:** con σ̂_d de las semillas piloto (la desviación entre semillas de Mask R-CNN en el E2 es 0,012). Se reporta la diferencia mínima detectable.
 
-## 6. Conjuntos adicionales (por decidir antes del congelamiento)
+## 6. Conjuntos adicionales (registrado el 2026-11-25, tag `e3-conjuntos`)
 
-Candidatos: segmentación de instancias de objetos pequeños, con máscaras y licencia abierta (núcleos celulares tipo NuInsSeg o DSB2018; MinneApple). Se eligen antes de ver cualquier resultado de SGW en ellos y no se usan para diseñar.
+Se registra antes de descargar los datos y antes de cualquier corrida de SGW o Mask R-CNN en ellos. Ninguno se usó para diseñar SGW: κ = 0,45 y c = 4 px quedan fijos.
+
+| Conjunto | Naturaleza | Fuente y licencia | Unidad de grupo | Partición |
+|---|---|---|---|---|
+| BBBC039 | Núcleos U2OS en fluorescencia (Hoechst), 200 campos de 520×696, 16 bits | Broad Bioimage Benchmark Collection (Ljosa et al., 2012), CC0 | La imagen (no hay metadatos de escena) | La oficial del archivo `metadata` (entrenamiento, validación, prueba) |
+| NuInsSeg | Núcleos en histología H&E, 665 parches de 512×512 de 31 órganos humanos y de ratón | Mahbod et al., *Scientific Data* 2024, Zenodo 10518968, CC BY 4.0 | El órgano (especie + tejido) | Agrupada por órgano, 70/15/15 con `random.Random(0)` sobre los órganos |
+| MinneApple | Manzanas en huerto, 670 imágenes de 1280×720 con máscaras | Häni et al., 2019 (arXiv:1909.06441); réplica de AgML en Hugging Face, MIT | La secuencia de captura (prefijo de fecha y hora del archivo); si no se puede recuperar, la imagen | Agrupada por secuencia, 70/15/15 con `random.Random(0)` |
+
+**Reglas, fijadas hoy:**
+- **Modelos y presupuesto:** SGW (κ = 0,45, c = 4) y Mask R-CNN con la configuración exacta del WDSD: 6 épocas, lote 2, tasa 0,01, coseno, AMP, volteo, anclas de 8–128 px, `min_size` 720 / `max_size` 1280 y 100 detecciones por imagen.
+  - Sin ajuste por conjunto.
+  - El tope de 100 detecciones recorta por igual a los dos modelos en las imágenes más densas; se reporta.
+- **Semillas:** 42, 43 y 44 por modelo y conjunto (18 corridas). Desviación declarada: menos de 10 semillas, por cómputo.
+- **Preprocesamiento:** cada imagen se guarda como PNG RGB de 8 bits.
+  - Las de 16 bits de BBBC039 se reescalan con los percentiles 0,5–99,5 de cada imagen.
+  - Las máscaras de instancia se guardan como RLE sin comprimir en COCO.
+  - Si una réplica perdió las instancias (máscara binaria), se separan por componentes conexos y se declara.
+- **Métrica y prueba:** la misma que en el WDSD: F1 de instancia por grupo en test, IoU de máscara ≥ 0,5.
+  - Por conjunto: Wilcoxon pareado por grupo, *bootstrap* pareado por grupo y t pareado sobre semillas.
+  - Familia de 3 contrastes con Holm; decide el máximo de los p ajustados.
+- **Consistencia (E3 §8):** SGW tiene mayor F1 medio en al menos 2 de los 3 conjuntos y no es significativamente peor en ninguno.
+- **Secundario:** recall del tercil pequeño, con cortes por percentiles de las áreas de val de cada conjunto.
 
 ## 7. Reglas de exclusión
 

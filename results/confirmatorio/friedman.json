@@ -1,0 +1,21 @@
+{
+ "N_grupos": 14,
+ "k_modelos": 15,
+ "chi2": 146.85535714285714,
+ "p_chi2": 3.0553228294943946e-24,
+ "iman_davenport_F": 38.84695323571091,
+ "p_iman_davenport": 3.81250934849652e-47,
+ "nemenyi_q": 3.391230283765256,
+ "CD": 5.732225406176801,
+ "rango_sgw": 2.9642857142857144,
+ "mejor_rango": "sgw_k0.45",
+ "empatados_con_sgw_por_nemenyi": [
+  "maskrcnn",
+  "htc",
+  "msrcnn",
+  "cascade",
+  "pointrend",
+  "yolov7",
+  "condinst"
+ ]
+}

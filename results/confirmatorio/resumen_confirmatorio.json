@@ -1,0 +1,72 @@
+{
+ "verificacion_max_dif": 2.220446049250313e-16,
+ "R3_cumple": false,
+ "H_M": {
+  "contraste": "H-M: recall pequeño SGW - Mask R-CNN > 0,05",
+  "n_grupos": 12,
+  "dif_media_grupos": 0.011597329224447858,
+  "ic95_lo": -0.040000000000000015,
+  "ic95_hi": 0.062064714946070874,
+  "dif_media_semillas": 0.0832258064516129,
+  "semillas_a_favor": 9,
+  "n_semillas": 10,
+  "nulo": 0.05,
+  "p_wilcoxon": 0.92724609375,
+  "p_bootstrap": 0.938006199380062,
+  "p_t_semillas": 0.00044551590202845085,
+  "p_decision": 0.938006199380062,
+  "confirmada": false,
+  "n_grupos_sin_tornillos_pequenos": 2
+ },
+ "P5_DE_recall_pequeno": {
+  "sgw_k0.45": 0.03290392858902282,
+  "sgw_c0_k0.45": 0.0348360545915124,
+  "maskrcnn": 0.03531075398154631
+ },
+ "friedman": {
+  "N_grupos": 14,
+  "k_modelos": 15,
+  "chi2": 146.85535714285714,
+  "p_chi2": 3.0553228294943946e-24,
+  "iman_davenport_F": 38.84695323571091,
+  "p_iman_davenport": 3.81250934849652e-47,
+  "nemenyi_q": 3.391230283765256,
+  "CD": 5.732225406176801,
+  "rango_sgw": 2.9642857142857144,
+  "mejor_rango": "sgw_k0.45",
+  "empatados_con_sgw_por_nemenyi": [
+   "maskrcnn",
+   "htc",
+   "msrcnn",
+   "cascade",
+   "pointrend",
+   "yolov7",
+   "condinst"
+  ]
+ },
+ "potencia": {
+  "etiqueta": "exploratorio (el análisis de potencia no se registró antes de las corridas)",
+  "sd_dif_grupos": 0.03656797133827227,
+  "n_grupos": 14,
+  "mde_grupos_alfa_holm_peor": 0.04434362212737619,
+  "mde_grupos_alfa_005": 0.030503184781092256,
+  "sd_dif_semillas": 0.028352546443046214,
+  "n_semillas": 10,
+  "mde_semillas_alfa_005": 0.028835483754164535,
+  "potencia_t_grupos_para_delta": 1.0,
+  "nota": "potencia aproximada por t pareado como sustituto de Wilcoxon"
+ },
+ "sensibilidad_maskrcnn_E2": {
+  "contraste": "SGW (3050) - Mask R-CNN del E2 (3060)",
+  "dif_media": 0.0121813305122429,
+  "ic95_lo": -0.014654961296752981,
+  "ic95_hi": 0.03664708091029997,
+  "p_wilcoxon": 0.0980254817405532,
+  "p_bootstrap": 0.17868213178682132
+ },
+ "hardware": {
+  "contraste": "Mask R-CNN 3050 - 3060, semillas 42-46",
+  "dif_media": 0.0036978162451764885,
+  "p_t_pareado": 0.42296835353677514
+ }
+}

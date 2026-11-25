@@ -1,0 +1,2 @@
+contraste,n_grupos,dif_media_grupos,ic95_lo,ic95_hi,dif_media_semillas,semillas_a_favor,n_semillas,nulo,p_wilcoxon,p_bootstrap,p_t_semillas,p_decision,confirmada,n_grupos_sin_tornillos_pequenos
+"H-M: recall pequeño SGW - Mask R-CNN > 0,05",12,0.011597329224447858,-0.040000000000000015,0.062064714946070874,0.0832258064516129,9,10,0.05,0.92724609375,0.938006199380062,0.00044551590202845085,0.938006199380062,False,2
