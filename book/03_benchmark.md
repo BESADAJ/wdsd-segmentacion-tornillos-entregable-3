@@ -40,6 +40,17 @@ El enunciado pide reentrenar en el entrenamiento completo con el número de épo
 
 Resultados en `results/exportacion/costo_cpu.csv` e `ida_y_vuelta.csv`; metadatos en `artifacts/*.metadata.json`.
 
+**Tabla 3.1.** Exportación. Semilla 48 de cada modelo, CPU de 6 hilos.
+
+| Modelo | F1 test (PyTorch, CPU, FP32) | F1 test (ONNX) | Máx. \|Δscore\| | Máx. \|Δcaja\| | IoU mín. de máscara | Latencia PyTorch | Latencia ONNX (mediana / p95) |
+|---|---|---|---|---|---|---|---|
+| SGW | 0,734 | 0,734 | 0,0002 | 0,007 px | 1,00 | 2,29 s | 1,76 / 1,92 s |
+| Mask R-CNN | 0,707 | 0,707 | 0,0004 | 0,004 px | 1,00 | 2,28 s | 1,65 / 1,80 s |
+
+- **Equivalencia:** el exportado reproduce exactamente la métrica primaria del modelo en memoria. La diferencia es 0, y la prueba TOST con δ = 0,20 da p < 0,001.
+- **Diferencia con la tabla confirmatoria:** el F1 de la semilla 48 en CPU con FP32 (0,734) difiere del de su corrida en GPU con precisión mixta (0,741). La diferencia viene de la precisión numérica, no de la exportación.
+- **Umbral en el grafo:** el grafo exportado aplica el umbral de score de val. Las detecciones sobre el umbral son las mismas y el grafo no materializa las máscaras de las que se descartan.
+
 Los otros 12 modelos del E2 se muestran en el dashboard con sus resultados precalculados:
 - 7 corren en MMDetection y 2 en los repositorios oficiales de YOLOv7 y YOLOv9, y su exportación a ONNX no es directa;
 - todos juntos no caben en la memoria del plan gratuito de Render.

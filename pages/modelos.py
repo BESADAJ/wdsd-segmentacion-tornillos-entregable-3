@@ -78,8 +78,12 @@ def layout():
                 dcc.Graph(id="gal-fig"), html.Div(id="gal-texto"),
             ]),
             dbc.Tab(label="Sube tu imagen", children=[
-                dbc.Alert("La inferencia en vivo no está disponible en este despliegue: los modelos ONNX no "
-                          "están cargados. Usa la galería precalculada o ejecuta la app con Docker.",
+                dbc.Alert(["La inferencia en vivo está desactivada en este despliegue. Una predicción de SGW a "
+                           f"1280×720 en CPU usa unos {data.PICO_MEMORIA_MB} MB de memoria (240 MB de pesos más las "
+                           "activaciones), y el plan gratuito de Render tiene 512 MB. Bajar la resolución no es "
+                           "una salida: al 50 % el F1 cae a 0,14 (capítulo 8). Usa la galería precalculada, o "
+                           "ejecuta la app con Docker (", html.Code("docker run -p 8050:8050 wdsd-sgw"),
+                           "), donde la predicción en vivo funciona con los mismos artefactos ONNX."],
                           color="info", className="mt-2") if not onnx else html.Div(),
                 dbc.Row([
                     dbc.Col([dbc.Label("Modelo"),

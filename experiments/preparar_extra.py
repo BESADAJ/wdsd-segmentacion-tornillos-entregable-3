@@ -104,7 +104,7 @@ class Escritor:
             self.n_ann += 1
             ys, xs = np.nonzero(m)
             self.d[split]["annotations"].append({
-                "id": self.n_ann, "image_id": self.n_img, "category_id": 1, "iscrowd": 0, "segmentation": rle(m),
+                "id": self.n_ann, "image_id": self.n_img, "category_id": 1, "iscrowd": 0, "segmentation": [rle(m)],  # lista: el cargador del E2 hace merge(frPyObjects(seg))
                 "area": float(m.sum()), "bbox": [float(xs.min()), float(ys.min()),
                                                  float(xs.max() - xs.min() + 1), float(ys.max() - ys.min() + 1)]})
 

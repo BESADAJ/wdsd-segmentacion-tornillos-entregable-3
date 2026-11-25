@@ -47,5 +47,21 @@ La app nunca importa `training/` ni torch: en despliegue solo usa numpy, Pillow,
 ```{admonition} Pendiente
 :class: warning
 - Capturas de pantalla de las cinco páginas, una vez desplegado.
-- Medir la memoria real en Render. Si la inferencia en vivo supera los 512 MB, se desactiva con `artifacts/` vacío y la app muestra solo la galería precalculada, como ya está previsto en el código.
 ```
+
+## Memoria e inferencia en vivo
+
+Una predicción con el ONNX de SGW sobre una imagen de 1280×720 usa unos 660 MB de pico en CPU (medido con `psutil`): unos 240 MB son la sesión con los pesos en FP32 y el resto, activaciones.
+
+Se probó a reducir la memoria:
+- desactivar el *arena* y el patrón de memoria de ONNX Runtime;
+- usar un hilo;
+- usar optimización de grafo básica;
+- aplicar en el grafo el umbral de score, para no materializar las máscaras de 100 detecciones.
+
+Ninguna opción baja el pico de unos 655 MB.
+
+El plan gratuito de Render tiene 512 MB. Por eso:
+- el despliegue gratuito usa `WDSD_INFERENCIA_VIVO=0`: la página de Modelos muestra la galería precalculada (SGW frente a Mask R-CNN sobre 8 imágenes de test) y explica la decisión;
+- con Docker en local, o en un plan de Render de 1 GB o más, la inferencia en vivo funciona con los mismos artefactos;
+- reducir la resolución no es alternativa: al 50 % el F1 cae a 0,14 (capítulo 8).

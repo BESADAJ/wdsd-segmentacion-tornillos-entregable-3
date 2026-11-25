@@ -11,3 +11,5 @@ services:
     envVars:
       - key: PORT
         value: "8050"
+      - key: WDSD_INFERENCIA_VIVO   # 0 en el plan gratuito: la inferencia usa ~660 MB y el plan tiene 512 MB
+        value: "0"

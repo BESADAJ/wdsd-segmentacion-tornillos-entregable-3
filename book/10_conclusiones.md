@@ -9,7 +9,10 @@
 3. **Esa ganancia se concentra en una escena**, que tiene el 38 % de los tornillos pequeños de test. La prueba preregistrada por grupo de escena no la confirma (+0,012).
    - La conclusión honesta: SGW ayuda en las escenas con muchos tornillos diminutos. No está demostrado que ayude en general.
 4. **SGW cambia recall entre tamaños** (−0,019 en el tercil grande) y ajusta más el entrenamiento (brecha train93 − val de 0,098 frente a 0,059), sin peor generalización entre val y test.
-5. **Teoría:** la similitud SGW tiene una sensibilidad a errores de posición acotada uniformemente en el tamaño (teorema 1), mientras que la del IoU crece como 2/a (proposición 2). Se verificó numéricamente y se cumplió en el piloto de asignación.
+5. **Robustez:**
+   - La ventaja de SGW no crece al reducir la escala (la predicción 4 no se cumple): al 50 %, los dos modelos colapsan.
+   - SGW es menos robusto que Mask R-CNN al desenfoque (−0,035 a −0,057) y al ruido fuerte (−0,034). Es el principal costo observado del mecanismo.
+6. **Teoría:** la similitud SGW tiene una sensibilidad a errores de posición acotada uniformemente en el tamaño (teorema 1), mientras que la del IoU crece como 2/a (proposición 2). Se verificó numéricamente y se cumplió en el piloto de asignación.
 
 ## Veredicto sobre R1, R2 y R3
 

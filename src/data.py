@@ -44,9 +44,17 @@ def texto(nombre: str) -> str:
     return (RAIZ / nombre).read_text(encoding="utf8")
 
 
+# Pico de memoria medido de una inferencia ONNX a 1280x720 en CPU: ~660 MB (240 MB de pesos + activaciones). No cabe en
+# los 512 MB del plan gratuito de Render: allí WDSD_INFERENCIA_VIVO=0 y la app muestra resultados precalculados.
+INFERENCIA_VIVO = os.environ.get("WDSD_INFERENCIA_VIVO", "1") != "0"
+PICO_MEMORIA_MB = 660
+
+
 def modelos_onnx() -> dict[str, dict]:
-    """Modelos exportados disponibles: nombre -> metadata.json."""
+    """Modelos exportados disponibles para inferencia en vivo: nombre -> metadata.json."""
     salida = {}
+    if not INFERENCIA_VIVO:
+        return salida
     for m in sorted(ARTIFACTS.glob("*.metadata.json")):
         meta = json.loads(m.read_text(encoding="utf8"))
         if (ARTIFACTS / meta["archivo"]).exists():

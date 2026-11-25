@@ -20,9 +20,13 @@ SRC_E2 = Path(os.environ.get("WDSD_E2_SRC", RAIZ.parents[1] / "Entregable_2_Deep
 sys.path[:0] = [str(RAIZ / "src"), str(SRC_E2)]
 
 
+IMAGEN_REFERENCIA = 14  # la de la galería con más tornillos (12): la prueba compara 8-9 detecciones por modelo
+
+
 def entrada_fija() -> np.ndarray:
     from PIL import Image
-    g = json.loads((RAIZ / "data" / "galeria.json").read_text(encoding="utf8"))[0]
+    g = next(x for x in json.loads((RAIZ / "data" / "galeria.json").read_text(encoding="utf8"))
+             if x["image_id"] == IMAGEN_REFERENCIA)
     im = Image.open(RAIZ / "data" / g["archivo"]).convert("RGB").resize((1280, 720), Image.BILINEAR)
     return np.asarray(im, dtype=np.float32).transpose(2, 0, 1) / 255.0
 

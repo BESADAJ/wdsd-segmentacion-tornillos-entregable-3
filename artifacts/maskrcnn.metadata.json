@@ -1,0 +1,94 @@
+{
+ "modelo": "maskrcnn",
+ "archivo": "maskrcnn.onnx",
+ "formato": "ONNX opset 17, pesos almacenados en FP16 (Cast a FP32 al cargar), c\u00f3mputo FP32",
+ "semilla": 48,
+ "criterio_seleccion": "mayor F1 por grupo en val entre las 10 semillas finales",
+ "entrenamiento": {
+  "epocas": 6,
+  "mejor_epoca": 5,
+  "lr_inicial": 0.01,
+  "lote": 2,
+  "optimizador": "SGD",
+  "config_sgw": null
+ },
+ "preprocesamiento": {
+  "entrada": "RGB uint8 HxWx3 -> float32 3xHxW en [0, 1]",
+  "resolucion": [
+   720,
+   1280
+  ],
+  "normalizacion_interna": "media/DE de ImageNet (en el grafo)",
+  "redimension_interna": "lado corto 720, largo <= 1280 (en el grafo)"
+ },
+ "esquema_entrada": {
+  "nombre": "imagen",
+  "tipo": "float32",
+  "forma": [
+   3,
+   720,
+   1280
+  ],
+  "rango": [
+   0.0,
+   1.0
+  ]
+ },
+ "esquema_salida": {
+  "boxes": "N x 4 (x1,y1,x2,y2) px",
+  "scores": "N",
+  "labels": "N (1 = tornillo)",
+  "masks": "N x 1 x H x W probabilidad; umbral 0,5"
+ },
+ "umbral_score": 0.65,
+ "metricas_val": {
+  "AP": 0.2932526066307152,
+  "AP50": 0.7693328774333125,
+  "AP75": 0.1307091992512679,
+  "AP_small": 0.2914201819018174,
+  "F1_img": 0.670384768363483,
+  "PQ_img": 0.46584203590373613,
+  "F1_grupo": 0.8071412761435788,
+  "PQ_grupo": 0.579974575546533
+ },
+ "metricas_test": {
+  "AP": 0.2185848134808515,
+  "AP50": 0.5948379707640763,
+  "AP75": 0.0892215712443917,
+  "AP_small": 0.21513191385045008,
+  "F1_img": 0.42701413030519303,
+  "PQ_img": 0.3041028180323728,
+  "SQ_img": 0.4541958075984697,
+  "F1_grupo": 0.7067774984942329,
+  "PQ_grupo": 0.5111366471069988,
+  "dice_semantico_img": 0.37608744559903623
+ },
+ "costo_cpu": {
+  "modelo": "maskrcnn",
+  "semilla": 48,
+  "parametros": 43922395,
+  "gflops": 381.13671168,
+  "mb_onnx_fp32": 168.08385562896729,
+  "mb_onnx_fp16": 84.26791858673096,
+  "memoria_pico_proceso_mb": 4121.91796875,
+  "F1_grupo_test_torch": 0.7071569140522199,
+  "F1_grupo_test_onnx_fp16": 0.7071569140522199,
+  "dif_F1_onnx_menos_torch": 0.0,
+  "p_TOST_delta_020": 2.3058794458228862e-141,
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "hilos": 6,
+  "lat_torch_fp32_mediana_ms": 2282.003699976485,
+  "lat_onnx_fp32_mediana_ms": 1707.1622000075877,
+  "lat_onnx_fp16_mediana_ms": 1647.8634500235785,
+  "lat_torch_fp32_p95_ms": 2668.9706899924204,
+  "lat_onnx_fp32_p95_ms": 1781.6321900347248,
+  "lat_onnx_fp16_p95_ms": 1804.2824900068808
+ },
+ "versiones": {
+  "torch": "2.11.0+cu128",
+  "torchvision": "0.26.0+cu128",
+  "onnx": "1.17.0",
+  "onnxruntime": "1.20.1",
+  "python": "3.11.18"
+ }
+}
