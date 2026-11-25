@@ -5,12 +5,13 @@ grupo en val. SGW solo cambia la asignación de entrenamiento: en inferencia la 
 SGW y el control se exportan con el mismo código.
 
 Pasos por modelo:
-1. Carga mejor.pt en CPU (FP32) y exporta el grafo completo de torchvision (preprocesado, RPN, RoI, máscaras) con
+1. Carga mejor.pt en CPU (FP32), fija score_thresh = umbral de val y exporta el grafo completo de torchvision (preprocesado, RPN, RoI, máscaras) con
    entrada fija 3x720x1280, opset 17.
 2. Guarda los pesos en FP16 (comprimir_pesos; el FP32 pesa ~170 MB y no cabe en GitHub). Entradas, salidas y
    cómputo siguen en FP32.
 3. Ida y vuelta sobre 10 imágenes fijas de test: compara cajas, scores y máscaras de PyTorch (CPU, FP32) con ONNX
-   Runtime (FP32 y FP16). Tolerancia declarada: |score| < 1e-3 en las detecciones emparejadas e IoU de máscara >= 0,95.
+   Runtime (FP32 y FP16). Tolerancia declarada: |score| < 1e-3 en las detecciones emparejadas e IoU de máscara >= 0,95
+   (en máscaras de menos de 50 px, diferencia <= 5 px).
 4. Métrica primaria del modelo exportado en las 108 imágenes de test, frente a la del modelo en memoria
    (umbral de val de la corrida), y prueba de equivalencia TOST por grupo con margen delta = 0,20.
 5. Costo en CPU: latencia mediana y p95 (lote 1, 3 de calentamiento, 20 medidas), memoria pico del proceso,
@@ -114,6 +115,10 @@ def main():
         m = maskrcnn.crear_modelo(True)
         m.load_state_dict(torch.load(carpeta / "mejor.pt", map_location="cpu"))
         m.eval()
+        # Despliegue: la RoI descarta en el grafo las detecciones bajo el umbral de val (el dashboard ya lo hacía
+        # después). Las salidas sobre el umbral no cambian, y las máscaras de hasta 100 detecciones a 720x1280
+        # (~370 MB) dejan de materializarse: el pico de memoria cabe en los 512 MB de Render.
+        m.roi_heads.score_thresh = umbral
 
         def torch_pred(x: np.ndarray):
             with torch.no_grad():

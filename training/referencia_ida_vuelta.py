@@ -41,6 +41,7 @@ def main():
         m.load_state_dict(torch.load(a.e3 / "corridas" / f"{nombre}_s{meta['semilla']}" / "mejor.pt",
                                      map_location="cpu"))
         m.eval()
+        m.roi_heads.score_thresh = meta["umbral_score"]  # igual que el ONNX exportado
         with torch.no_grad():
             o = m([torch.from_numpy(x)])[0]
         np.savez_compressed(RAIZ / "results" / "exportacion" / f"referencia_{nombre}.npz",

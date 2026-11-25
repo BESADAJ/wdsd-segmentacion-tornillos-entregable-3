@@ -75,6 +75,7 @@ def sesion(modelo: str):
     op = ort.SessionOptions()
     op.intra_op_num_threads = 2
     op.enable_cpu_mem_arena = False  # menos memoria residente en el plan gratuito
+    op.log_severity_level = 3  # sin avisos de forma de salida (la forma fija del grafo es solo nominal)
     return ort.InferenceSession(str(data.ARTIFACTS / meta["archivo"]), op, providers=["CPUExecutionProvider"])
 
 
