@@ -100,6 +100,10 @@ Se registra antes de descargar los datos y antes de cualquier corrida de SGW o M
 - **BBBC039:** los núcleos no son pequeños (área mediana 627 px, frente a 72 px de los tornillos) y hay hasta 231 por imagen.
   - El tope de 100 detecciones recorta a los dos modelos en las imágenes densas. Se mantiene, porque cambiarlo sería ajustar por conjunto.
   - Sirve como control: un conjunto donde la hipótesis del mecanismo predice poca o ninguna ventaja.
+- **NuInsSeg:** la partición por órgano queda en 22/5/4 órganos (513/54/98 imágenes).
+  - Con 4 grupos en test, el Wilcoxon por grupo no puede bajar de p = 0,0625.
+  - Se mantiene la partición por órgano (sin fuga) y la unidad estadística en test pasa a ser la imagen (n = 98). También se reporta el F1 por órgano.
+  - Los núcleos tampoco son pequeños: área mediana de 465 a 819 px según la partición.
 - `preparar_extra.py` guarda el resumen y el SHA-256 de cada JSON en `resumen_preparacion.json` de cada conjunto.
 
 ## 7. Reglas de exclusión
