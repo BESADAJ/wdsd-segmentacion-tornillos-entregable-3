@@ -1,0 +1,14 @@
+format: jb-book
+root: 00_introduccion
+chapters:
+  - file: 01_trazabilidad
+  - file: 02_datos
+  - file: 03_benchmark
+  - file: 04_literatura_novedad
+  - file: 05_modelo_diseno
+  - file: 06_implementacion
+  - file: 07_protocolo_validacion
+  - file: 08_evaluacion_ampliada
+  - file: 09_dashboard
+  - file: 10_conclusiones
+  - file: 11_reproducibilidad

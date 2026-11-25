@@ -1,0 +1,13 @@
+# Despliegue en Render (Blueprint). Cada push a main reconstruye la imagen del Dockerfile.
+services:
+  - type: web
+    name: wdsd-sgw-dashboard        # nombre del servicio en Render
+    runtime: docker                 # construye con el Dockerfile del repositorio
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "8050"

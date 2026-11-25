@@ -1,0 +1,17 @@
+# Entorno de entrenamiento y análisis (D:\wdsd_envs\wdsd_dl, Python 3.11, CUDA 12.8). Versiones exactas.
+# El entrenamiento reutiliza el código del E2 (WDSD_E2_SRC = <repo E2>/src).
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+numpy==2.4.6
+pandas==3.1.1
+scipy==1.17.1
+pycocotools==2.0.11
+pillow==13.0.0
+matplotlib==3.11.2
+onnx==1.17.0
+onnxruntime==1.20.1
+pyarrow==17.0.0
+psutil==7.2.2
+pytest==8.3.4
+opencv-python==5.0.0.93

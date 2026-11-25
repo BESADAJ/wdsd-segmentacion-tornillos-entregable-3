@@ -241,6 +241,39 @@ def main():
     C["significativa"] = C.p_decision < ALPHA
     C.to_csv(out / "ablacion.csv", index=False)
 
+    # ---------------- supuestos y sobreajuste (SGW frente a Mask R-CNN)
+    d_g = (F[SGW] - F[CTRL]).to_numpy()
+    d_s = (S[SGW] - S[CTRL]).to_numpy()
+    sup = dict(
+        shapiro_dif_grupos_p=float(stats.shapiro(d_g).pvalue),
+        shapiro_dif_semillas_p=float(stats.shapiro(d_s).pvalue),
+        asimetria_dif_grupos=float(stats.skew(d_g)),
+        levene_semillas_p=float(stats.levene(S[SGW], S[CTRL]).pvalue),
+        nota="Wilcoxon y bootstrap no suponen normalidad; el t pareado sobre semillas sí (Shapiro sobre sus "
+             "diferencias). Si Shapiro rechaza, decide el máximo de los p, que ya es conservador.")
+    brecha = []
+    for m in [SGW, CTRL, *ABL]:
+        for s in SEM_E3:
+            r = json.loads((a.e3 / "corridas" / f"{m}_s{s}" / "resumen.json").read_text(encoding="utf8"))
+            mt = r["metricas"]
+            brecha.append(dict(modelo=m, semilla=s, train93_F1_grupo=mt["train93"]["F1_grupo"],
+                               val_F1_grupo=mt["val"]["F1_grupo"], test_F1_grupo=mt["test"]["F1_grupo"],
+                               brecha_train93_val=mt["train93"]["F1_grupo"] - mt["val"]["F1_grupo"],
+                               brecha_val_test=mt["val"]["F1_grupo"] - mt["test"]["F1_grupo"],
+                               mejor_epoca=r.get("mejor_epoca"), val_AP_sube_al_final=r.get("val_AP_sube_al_final")))
+    Bg = pd.DataFrame(brecha)
+    Bg.to_csv(out / "sobreajuste_por_corrida.csv", index=False)
+    bs, bc = Bg[Bg.modelo == SGW].set_index("semilla"), Bg[Bg.modelo == CTRL].set_index("semilla")
+    sobre = dict(
+        brecha_train93_val_sgw=float(bs.brecha_train93_val.mean()),
+        brecha_train93_val_maskrcnn=float(bc.brecha_train93_val.mean()),
+        p_t_brecha_train93_val=float(stats.ttest_rel(bs.brecha_train93_val, bc.brecha_train93_val).pvalue),
+        brecha_val_test_sgw=float(bs.brecha_val_test.mean()),
+        brecha_val_test_maskrcnn=float(bc.brecha_val_test.mean()),
+        p_t_brecha_val_test=float(stats.ttest_rel(bs.brecha_val_test, bc.brecha_val_test).pvalue),
+        corridas_con_val_AP_subiendo_al_final={m: int(Bg[Bg.modelo == m].val_AP_sube_al_final.sum())
+                                              for m in [SGW, CTRL, *ABL]})
+
     # ---------------- D. Friedman / Iman-Davenport / Nemenyi
     modelos = [SGW] + rivales
     X = F[modelos].to_numpy()
@@ -286,7 +319,8 @@ def main():
                 p_t_pareado=float(stats.ttest_rel(S[CTRL].loc[list(SEM_E2)],
                                                   S["maskrcnn_E2"].loc[list(SEM_E2)]).pvalue))
     resumen = dict(verificacion_max_dif=max_dif, R3_cumple=r3, H_M=hm, P5_DE_recall_pequeno=p5_de,
-                   friedman=fried, potencia=poder, sensibilidad_maskrcnn_E2=sens, hardware=hard)
+                   friedman=fried, potencia=poder, sensibilidad_maskrcnn_E2=sens, hardware=hard,
+                   supuestos=sup, sobreajuste=sobre)
     (out / "resumen_confirmatorio.json").write_text(json.dumps(resumen, indent=1, ensure_ascii=False, default=float),
                                                     encoding="utf8")
 
@@ -307,6 +341,8 @@ def main():
     print("\n== Friedman\n", json.dumps(fried, indent=1, ensure_ascii=False, default=float))
     print("\n== Potencia (exploratorio)\n", json.dumps(poder, indent=1, ensure_ascii=False))
     print("\n== Sensibilidad\n", sens, "\n", hard)
+    print("\n== Supuestos\n", json.dumps(sup, indent=1, ensure_ascii=False))
+    print("\n== Sobreajuste\n", json.dumps(sobre, indent=1, ensure_ascii=False))
 
 
 def diagrama_cd(R: pd.Series, CD: float, ruta: Path):

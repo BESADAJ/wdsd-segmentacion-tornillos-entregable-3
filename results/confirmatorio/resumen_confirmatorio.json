@@ -68,5 +68,27 @@
   "contraste": "Mask R-CNN 3050 - 3060, semillas 42-46",
   "dif_media": 0.0036978162451764885,
   "p_t_pareado": 0.42296835353677514
+ },
+ "supuestos": {
+  "shapiro_dif_grupos_p": 0.5909185984198315,
+  "shapiro_dif_semillas_p": 0.008230527637563668,
+  "asimetria_dif_grupos": 0.5018224452544474,
+  "levene_semillas_p": 0.3890464377218106,
+  "nota": "Wilcoxon y bootstrap no suponen normalidad; el t pareado sobre semillas sí (Shapiro sobre sus diferencias). Si Shapiro rechaza, decide el máximo de los p, que ya es conservador."
+ },
+ "sobreajuste": {
+  "brecha_train93_val_sgw": 0.09819478374546928,
+  "brecha_train93_val_maskrcnn": 0.058573158585116504,
+  "p_t_brecha_train93_val": 0.006034541791102856,
+  "brecha_val_test_sgw": 0.06983663119301739,
+  "brecha_val_test_maskrcnn": 0.0709006616759571,
+  "p_t_brecha_val_test": 0.9240901381789198,
+  "corridas_con_val_AP_subiendo_al_final": {
+   "sgw_k0.45": 4,
+   "maskrcnn": 3,
+   "sgw_rpn_k0.45": 4,
+   "sgw_roi_k0.45": 2,
+   "sgw_c0_k0.45": 2
+  }
  }
 }

@@ -135,5 +135,27 @@ def aplicar_sgw(modelo: nn.Module, kappa: float = KAPPA_DEFECTO, piso: float = P
 def crear_modelo(preentrenado: bool = True, kappa: float = KAPPA_DEFECTO, piso: float = PISO_C_PX,
                  en_rpn: bool = True, en_roi: bool = True) -> nn.Module:
     """El Mask R-CNN del E1/E2 (anclas de 8 a 128 px, sin reescalar) con la asignación SGW."""
-    from wdsd_inst import maskrcnn  # mismo constructor que el modelo base, para que solo cambie la asignación
-    return aplicar_sgw(maskrcnn.crear_modelo(preentrenado), kappa, piso, en_rpn, en_roi)
+    return aplicar_sgw(mask_rcnn_base(preentrenado), kappa, piso, en_rpn, en_roi)
+
+
+def mask_rcnn_base(preentrenado: bool = True) -> nn.Module:
+    """Constructor del modelo base: el de wdsd_inst.maskrcnn (E1/E2) si está disponible, para que solo cambie la
+    asignación; si no (por ejemplo en CI), una copia con la misma configuración: ResNet-50-FPN, anclas de 8 a 128 px
+    con aspectos 0,5/1/2, min_size 720, max_size 1280, 100 detecciones y cabezas de 2 clases."""
+    try:
+        from wdsd_inst import maskrcnn
+        return maskrcnn.crear_modelo(preentrenado)
+    except ImportError:
+        pass
+    from torchvision.models.detection import MaskRCNN_ResNet50_FPN_Weights, maskrcnn_resnet50_fpn
+    from torchvision.models.detection.anchor_utils import AnchorGenerator
+    from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+    from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+    anclas = AnchorGenerator(((8,), (16,), (32,), (64,), (128,)), ((0.5, 1.0, 2.0),) * 5)
+    m = maskrcnn_resnet50_fpn(weights=MaskRCNN_ResNet50_FPN_Weights.DEFAULT if preentrenado else None,
+                              weights_backbone=None, num_classes=None if preentrenado else 2, min_size=720,
+                              max_size=1280, rpn_anchor_generator=anclas, box_detections_per_img=100)
+    if preentrenado:
+        m.roi_heads.box_predictor = FastRCNNPredictor(m.roi_heads.box_predictor.cls_score.in_features, 2)
+        m.roi_heads.mask_predictor = MaskRCNNPredictor(256, 256, 2)
+    return m

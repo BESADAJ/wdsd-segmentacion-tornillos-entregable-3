@@ -5,3 +5,5 @@ __pycache__/
 *.onnx
 datos_inst/
 _build/
+*_fp32.onnx
+.env

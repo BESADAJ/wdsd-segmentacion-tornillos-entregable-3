@@ -5,7 +5,7 @@ import math
 import pytest
 import torch
 
-from original_model import SimilitudSGW, aplicar_sgw, distancia_w2, parametros_gaussianos
+from original_model import SimilitudSGW, aplicar_sgw, distancia_w2, mask_rcnn_base, parametros_gaussianos
 
 
 def cajas_aleatorias(n, g, lado_min=2.0, lado_max=80.0):
@@ -109,12 +109,11 @@ def test_entradas_vacias():
 
 
 # --- Integración con Mask R-CNN -------------------------------------------------------------------------
-maskrcnn = pytest.importorskip("wdsd_inst.maskrcnn")
 
 
 def _modelo(semilla, **kw):
     torch.manual_seed(semilla)
-    m = maskrcnn.crear_modelo(preentrenado=False)
+    m = mask_rcnn_base(preentrenado=False)
     m.transform.min_size, m.transform.max_size = (256,), 256  # imagen pequeña para que la prueba corra en CPU
     return aplicar_sgw(m, **kw)
 

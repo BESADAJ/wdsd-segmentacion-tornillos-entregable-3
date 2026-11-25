@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "Si usas este trabajo, cítalo así."
+title: "Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD (Entregable 3)"
+authors:
+  - family-names: Berrio
+    given-names: Ivan
+  - family-names: Castillo
+    given-names: Jose David
+  - family-names: Besada
+    given-names: Jaime
+version: 1.0.0
+date-released: 2026-11-25
+license: MIT

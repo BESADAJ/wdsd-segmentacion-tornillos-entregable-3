@@ -1,0 +1,23 @@
+# Integración continua: en cada push instala las dependencias y ejecuta pytest
+# (pruebas del modelo original con torch en CPU, prueba de ida y vuelta del ONNX, app y consistencia con el informe).
+name: ci
+on: [push, pull_request]
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependencias
+        run: |
+          pip install -r requirements.txt
+          pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install pytest==8.3.4 pycocotools==2.0.8 scipy==1.14.1
+      - name: Pruebas
+        env:
+          WDSD_SIN_E2: "1"
+        run: pytest -q
