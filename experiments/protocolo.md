@@ -92,6 +92,16 @@ Se registra antes de descargar los datos y antes de cualquier corrida de SGW o M
 - **Consistencia (E3 §8):** SGW tiene mayor F1 medio en al menos 2 de los 3 conjuntos y no es significativamente peor en ninguno.
 - **Secundario:** recall del tercil pequeño, con cortes por percentiles de las áreas de val de cada conjunto.
 
+**Desviaciones encontradas al preparar los datos (2026-11-25), antes de cualquier corrida en ellos:**
+- **MinneApple:** la réplica de AgML trae máscaras binarias, así que se separan por componentes conexos, como estaba previsto.
+  - Solo hay 10 secuencias de captura. La partición agrupada queda en 7/2/1 secuencias (547/89/34 imágenes).
+  - Se mantiene esa partición para evitar fuga, pero con 1 secuencia en test no hay prueba por grupo posible.
+  - La unidad estadística en test pasa a ser la imagen (n = 34). Son imágenes de una misma secuencia, correlacionadas, y se reporta como amenaza.
+- **BBBC039:** los núcleos no son pequeños (área mediana 627 px, frente a 72 px de los tornillos) y hay hasta 231 por imagen.
+  - El tope de 100 detecciones recorta a los dos modelos en las imágenes densas. Se mantiene, porque cambiarlo sería ajustar por conjunto.
+  - Sirve como control: un conjunto donde la hipótesis del mecanismo predice poca o ninguna ventaja.
+- `preparar_extra.py` guarda el resumen y el SHA-256 de cada JSON en `resumen_preparacion.json` de cada conjunto.
+
 ## 7. Reglas de exclusión
 
 Igual que en el E2: solo por fallo técnico (caída, falta de memoria o pérdida NaN), con un reintento con la misma semilla. Toda exclusión se reporta.
