@@ -7,7 +7,10 @@ por la escala de cada tornillo, con un piso de 4 px.
 **Resultados**, protocolo preregistrado (tag `e3-protocolo`), 10 semillas:
 - F1 de instancia por grupo: 0,738 frente a 0,723 de Mask R-CNN. No es significativo, y R3 no se cumple.
 - Recall de tornillos pequeños: 0,385 frente a 0,302 (todos los tornillos juntos). La prueba preregistrada por escena no lo confirma.
-- Detalle en `book/07_protocolo_validacion.md`.
+- En tres conjuntos adicionales (BBBC039, NuInsSeg, MinneApple), SGW empata con Mask R-CNN; el criterio de consistencia no se cumple.
+- Detalle en `book/07_protocolo_validacion.md` y `book/08_evaluacion_ampliada.md`.
+
+**[Libro en línea](https://besadaj.github.io/wdsd-segmentacion-tornillos-entregable-3/)** (Jupyter Book; GitHub Actions lo publica en la rama `gh-pages` en cada cambio de `book/`).
 
 ## Estructura
 
