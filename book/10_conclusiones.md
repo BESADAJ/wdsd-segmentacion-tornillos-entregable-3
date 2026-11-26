@@ -12,7 +12,8 @@
 5. **Robustez:**
    - La ventaja de SGW no crece al reducir la escala (la predicción 4 no se cumple): al 50 %, los dos modelos colapsan.
    - SGW es menos robusto que Mask R-CNN al desenfoque (−0,035 a −0,057) y al ruido fuerte (−0,034). Es el principal costo observado del mecanismo.
-6. **Teoría:** la similitud SGW tiene una sensibilidad a errores de posición acotada uniformemente en el tamaño (teorema 1), mientras que la del IoU crece como 2/a (proposición 2). Se verificó numéricamente y se cumplió en el piloto de asignación.
+6. **Generalización:** en BBBC039, NuInsSeg y MinneApple, SGW queda empatado con Mask R-CNN (diferencias de −0,006 a +0,002). Solo es mejor en media en NuInsSeg y no es significativamente peor en ninguno. El criterio de consistencia (2 de 3) no se cumple (capítulo 8 §2).
+7. **Teoría:** la similitud SGW tiene una sensibilidad a errores de posición acotada uniformemente en el tamaño (teorema 1), mientras que la del IoU crece como 2/a (proposición 2). Se verificó numéricamente y se cumplió en el piloto de asignación.
 
 ## Veredicto sobre R1, R2 y R3
 
@@ -35,7 +36,7 @@
   - el F1 por grupo da el mismo peso a grupos con 1 y con 59 tornillos pequeños, y eso decidió H-M.
 - **Externa:**
   - un solo conjunto de tornillos;
-  - los conjuntos adicionales tienen objetos más grandes y una estructura de grupos pobre (capítulo 8).
+  - los conjuntos adicionales tienen objetos más grandes y una estructura de grupos pobre (capítulo 8), y en ellos SGW no mantiene su ventaja.
 - **Estadística:**
   - 14 grupos limitan la potencia;
   - las diferencias por semilla no son normales (Shapiro p = 0,008), así que el t es orientativo.

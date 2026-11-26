@@ -14,6 +14,7 @@
 - SGW alcanza 0,738 de F1 de instancia por grupo, el mejor del benchmark, frente a 0,723 de Mask R-CNN.
 - La diferencia no es significativa (Holm), y R3 no se cumple.
 - El recall de tornillos pequeños sube de 0,30 a 0,39 contando todos los tornillos, pero la prueba preregistrada por escena no lo confirma: la ganancia se concentra en una escena.
+- En tres conjuntos adicionales (núcleos celulares y manzanas), SGW empata con Mask R-CNN y no cumple el criterio de consistencia.
 
 ## Contribuciones
 

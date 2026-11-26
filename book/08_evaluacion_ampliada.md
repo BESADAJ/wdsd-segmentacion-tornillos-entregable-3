@@ -52,10 +52,28 @@ Se registraron antes de descargarlos (tag `e3-conjuntos`). Las desviaciones que 
 - **Tope de detecciones:** las 100 detecciones por imagen recortan a los dos modelos en BBBC039 y NuInsSeg, que tienen hasta 364 objetos por imagen.
 - **Tamaño:** en los tres conjuntos los objetos son mucho más grandes que los tornillos. La hipótesis del mecanismo predice poca o ninguna ventaja: son una prueba de que SGW no empeora fuera de su nicho, más que de que mejora.
 
-```{admonition} Resultados pendientes
-:class: note
-Las 18 corridas están en curso (`training/cola_extra.py`). Al terminar, se completan la tabla de consistencia (SGW mejor en al menos 2 de 3 y no peor en ninguno) y las pruebas por conjunto con Holm.
-```
+**Resultado: el criterio de consistencia no se cumple.** SGW tiene mayor F1 medio solo en NuInsSeg (1 de 3), aunque no es significativamente peor en ninguno de los tres conjuntos.
+
+**Tabla 8.2.** SGW frente a Mask R-CNN en los conjuntos adicionales. F1 de instancia por imagen en test, promedio de 3 semillas (42–44). La diferencia es SGW − Mask R-CNN, con IC 95 % por bootstrap pareado de imágenes. Decide el mayor p ajustado por Holm sobre los 3 conjuntos (`results/conjuntos_extra/contrastes.csv`).
+
+| Conjunto | n | SGW | Mask R-CNN | Diferencia [IC 95 %] | Imágenes con SGW mejor | p Holm (Wilcoxon / bootstrap / t) | Decisión |
+|---|---|---|---|---|---|---|---|
+| BBBC039 | 50 | 0,867 | 0,872 | −0,005 [−0,008; −0,002] | 5 | 0,012 / 0,002 / 0,118 | No significativo (p = 0,118) |
+| NuInsSeg | 98 | 0,752 | 0,750 | +0,002 [−0,003; 0,007] | 51 | 0,686 / 0,667 / 1,000 | No significativo |
+| MinneApple | 34 | 0,570 | 0,576 | −0,006 [−0,019; 0,006] | 13 | 0,686 / 0,667 / 1,000 | No significativo |
+
+- **Consistencia** (`consistencia.json`): SGW es mejor en media en 1 de 3 conjuntos y no es significativamente peor en ninguno. Se exigían 2 de 3, así que **no se cumple**.
+- **BBBC039:** SGW pierde de forma pequeña pero sistemática (en 45 de 50 imágenes).
+  - Por imagen, Wilcoxon y bootstrap son significativos tras Holm. El t sobre 3 semillas no lo es (p = 0,118) y decide por la regla del máximo.
+  - Es coherente con la hipótesis: los núcleos de BBBC039 no son pequeños (área mediana 627 px), así que la tolerancia extra de SGW no aporta y cuesta algo de precisión.
+- **MinneApple:** la diferencia cambia de signo entre semillas (+0,022, +0,008 y −0,050 en F1 por grupo). La variación entre semillas es mayor que la diferencia.
+- **NuInsSeg:** empate práctico. Por órgano, las diferencias van de −0,002 a +0,005 (`nuinsseg_por_organo.csv`).
+- **Recall del tercil pequeño** (exploratorio, cortes en val de cada conjunto):
+  - SGW sube en MinneApple (0,774 frente a 0,690) y en NuInsSeg (0,194 frente a 0,189), y baja en BBBC039 (0,423 frente a 0,448).
+  - En MinneApple va en la misma dirección que en WDSD, aunque no se traduce en mejor F1.
+- **Tiempos:** la corrida de SGW en MinneApple con semilla 44 incluyó pausas del equipo y un periodo con la GPU compartida. Su tiempo de entrenamiento (244 min) no es comparable; las métricas no se ven afectadas.
+
+**Lectura.** Fuera de WDSD, SGW no generaliza su ventaja: queda empatado con Mask R-CNN dentro de ±0,006 de F1. Como se anticipó al registrar los conjuntos, ninguno tiene objetos del tamaño de los tornillos. Esto no refuta el mecanismo, pero tampoco lo respalda como mejora general.
 
 ## 3. Calibración, incertidumbre, eficiencia y errores
 

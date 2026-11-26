@@ -1,0 +1,5 @@
+organo,SGW,MaskRCNN
+human pancreas,0.7888,0.7835
+human peritoneum,0.6678,0.6623
+mouse femur,0.44,0.4424
+mouse liver,0.7874,0.7891
