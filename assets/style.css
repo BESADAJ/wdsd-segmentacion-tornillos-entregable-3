@@ -8,3 +8,6 @@ h4 { margin-top: 1.2rem; }
 .ficha td, .ficha th { border: 1px solid #DEE2E6; padding: 4px 8px; }
 .dash-table-container .dash-spreadsheet-container { max-width: 100%; }
 @media (max-width: 768px) { .sticky-filtros { position: static; } }
+
+/* Frase de interpretación de cada gráfico: recuadro con borde (contraste y legibilidad; no depende solo del color) */
+.insight { background: #F4F6F8; border-left: 4px solid #2C3E50; border-radius: 4px; padding: 8px 12px; font-size: .9rem; color: #2C3E50; margin: .25rem 0 1.25rem; }

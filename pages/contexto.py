@@ -32,9 +32,9 @@ def layout():
         dbc.Row([
             dbc.Col(tarjeta("62 Mt", "residuos electrónicos generados en 2022 (GEM 2024)"), md=3, className="mb-2"),
             dbc.Col(tarjeta("10,6 px", "lado mediano de un tornillo en WDSD"), md=3, className="mb-2"),
-            dbc.Col(tarjeta(f"{sgw.F1_test:.3f}", "F1 de instancia por grupo del modelo original (SGW)", "warning"),
+            dbc.Col(tarjeta(f"{sgw.F1_test:.3f}".replace(".", ","), "F1 de instancia por grupo del modelo original (SGW)", "warning"),
                     md=3, className="mb-2"),
-            dbc.Col(tarjeta(f"+{sgw.F1_test - mr.F1_test:.3f}", "frente a Mask R-CNN: no significativo", "secondary"),
+            dbc.Col(tarjeta(f"+{sgw.F1_test - mr.F1_test:.3f}".replace(".", ","), "frente a Mask R-CNN: no significativo", "secondary"),
                     md=3, className="mb-2"),
         ]),
         html.H4("Preguntas de investigación e hipótesis", className="mt-4"),

@@ -13,7 +13,7 @@ VARIABLES = {"area_px": "Área (px)", "ancho_px": "Ancho de la caja (px)", "alto
 
 
 def insight(texto):
-    return html.P(["💡 ", texto], className="small text-muted mb-4")
+    return html.P(["💡 ", texto], className="insight")
 
 
 def layout():
