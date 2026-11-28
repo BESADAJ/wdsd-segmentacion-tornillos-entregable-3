@@ -164,24 +164,32 @@
       var n = keep.length, lo = Math.max(0, n - cfg.radio), hi = n + cfg.radio;
       var orden = keep.map(function (k) { return scores[k]; }).sort(function (a, b) { return b - a; }).slice(0, 15);
       var res = [
-        c("Div", {className: "row"}, [
-          c("Div", {className: "col-lg-6"}, [c("H6", {}, "Máscaras predichas"),
-            c("Img", {src: superponer(px, o.boxes.data, scores, o.masks.data, keep), className: "img-fluid",
-                      alt: "Imagen con las máscaras de tornillo predichas en naranja"})]),
-          c("Div", {className: "col-lg-6"}, [c("H6", {}, "Explicación local: mapa de confianza por píxel"),
-            c("Img", {src: mapaConfianza(scores, o.masks.data, keep), className: "img-fluid",
-                      alt: "Mapa de confianza: probabilidad de máscara por score de cada detección"})]),
+        c("Div", {className: "resultado-cabeza"}, [
+          c("Div", {className: "resultado-n"}, [String(n), c("Small", {}, "tornillos detectados")]),
+          c("Span", {className: "resultado-dato"}, ["Intervalo conforme 90 %: ", c("B", {}, lo + " a " + hi)]),
+          c("Span", {className: "resultado-dato"}, ["Modelo: ", c("B", {}, nombre)]),
+          c("Span", {className: "resultado-dato"}, ["Latencia: ", c("B", {}, Math.round(ms) + " ms")]),
         ]),
-        c("Table", {className: "table table-sm table-bordered mt-2"}, c("Tbody", {}, [
-          fila("Tornillos detectados", String(n)),
-          fila("Intervalo conforme 90 % del número de tornillos",
-               lo + " a " + hi + " (cobertura empírica en test: " + Math.round(100 * cfg.cobertura) + " %)"),
-          fila("Umbral de score (elegido en val)", coma(u, 2)),
-          fila("Latencia (tu navegador, onnxruntime-web, " + estado.hilos + (estado.hilos === 1 ? " hilo)" : " hilos)"),
-               Math.round(ms) + " ms"),
-          fila("Scores de las detecciones", orden.map(function (v) { return coma(v, 2); }).join("; ") || "—"),
-        ])),
-        c("Small", {className: "text-muted"}, "Calculado en tu navegador con el mismo archivo ONNX que usa el " +
+        c("Div", {className: "row g-4"}, [
+          c("Div", {className: "col-lg-8"}, [c("Div", {className: "figura-titulo"}, "Máscaras predichas"),
+            c("Img", {src: superponer(px, o.boxes.data, scores, o.masks.data, keep), className: "figura-pred",
+                      alt: "Imagen con las máscaras de tornillo predichas en naranja"})]),
+          c("Div", {className: "col-lg-4"}, [
+            c("Div", {className: "figura-titulo"}, "Explicación local: mapa de confianza por píxel"),
+            c("Img", {src: mapaConfianza(scores, o.masks.data, keep), className: "figura-pred",
+                      alt: "Mapa de confianza: probabilidad de máscara por score de cada detección"}),
+            c("Table", {className: "table tabla-wdsd tabla-ficha mt-3"}, c("Tbody", {}, [
+              fila("Tornillos detectados", String(n)),
+              fila("Intervalo conforme 90 % del número de tornillos",
+                   lo + " a " + hi + " (cobertura empírica en test: " + Math.round(100 * cfg.cobertura) + " %)"),
+              fila("Umbral de score (elegido en val)", coma(u, 2)),
+              fila("Latencia (tu navegador, onnxruntime-web, " + estado.hilos + (estado.hilos === 1 ? " hilo)" : " hilos)"),
+                   Math.round(ms) + " ms"),
+              fila("Scores de las detecciones", orden.map(function (v) { return coma(v, 2); }).join("; ") || "—"),
+            ])),
+          ]),
+        ]),
+        c("P", {className: "nota mt-3 mb-0"}, "Calculado en tu navegador con el mismo archivo ONNX que usa el " +
           "servidor en local. El score de detección no está calibrado como probabilidad (ECE del E2); el intervalo " +
           "del conteo sí tiene garantía de cobertura bajo intercambiabilidad, que entre escenas no se cumple del todo."),
       ];

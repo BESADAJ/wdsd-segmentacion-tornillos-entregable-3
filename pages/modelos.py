@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from dash import (ClientsideFunction, Input, Output, State, callback, clientside_callback, dash_table, dcc, html,
                   no_update)
 
-from src import data, explain, inference, plots
+from src import data, explain, inference, plots, ui
 
 dash.register_page(__name__, path="/modelos", name="Modelos", title="Modelos · WDSD")
 
@@ -24,19 +24,32 @@ def lider():
     if "latencia_CPU_ms" not in t:
         t["latencia_CPU_ms"] = None
     cols = []
+    una_cifra = {"parametros_M", "GFLOPs", "latencia_GPU_ms", "latencia_CPU_ms"}  # magnitudes: 1 decimal basta
     for c, n in COLUMNAS:
         col = {"name": n, "id": c}
         if t[c].dtype.kind == "f":
-            col.update(type="numeric", format=dash_table.Format.Format(precision=3,
-                                                                      scheme=dash_table.Format.Scheme.fixed))
+            col.update(type="numeric", format=dash_table.Format.Format(
+                precision=1 if c in una_cifra else 3, scheme=dash_table.Format.Scheme.fixed))
         cols.append(col)
     return dash_table.DataTable(
         data=t[[c for c, _ in COLUMNAS]].to_dict("records"), columns=cols, sort_action="native",
         filter_action="native", page_size=16, style_table={"overflowX": "auto"},
-        style_cell={"fontFamily": "Lato, sans-serif", "fontSize": 13, "padding": "4px", "whiteSpace": "normal"},
-        style_header={"backgroundColor": plots.OSCURO, "color": "white", "fontWeight": "bold"},
+        style_cell={"fontFamily": "Lato, Segoe UI, sans-serif", "fontSize": 14, "padding": "8px 7px",
+                    "whiteSpace": "normal", "color": plots.OSCURO, "border": "none",
+                    "borderBottom": "1px solid #E3E8ED", "textAlign": "right", "minWidth": "52px"},
+        style_cell_conditional=[{"if": {"column_id": c}, "textAlign": "left"}
+                                for c in ("nombre", "rol", "familia", "decision_vs_SGW")] +
+                               [{"if": {"column_id": "nombre"}, "fontWeight": "bold", "minWidth": "120px"},
+                                {"if": {"column_id": "decision_vs_SGW"}, "minWidth": "150px", "maxWidth": "170px"},
+                                {"if": {"column_id": "familia"}, "maxWidth": "120px"},
+                                {"if": {"column_id": "rol"}, "maxWidth": "90px"}],
+        style_header={"backgroundColor": "#F6F8FA", "color": plots.OSCURO, "fontWeight": "bold",
+                      "borderBottom": "2px solid " + plots.OSCURO, "whiteSpace": "normal"},
+        style_filter={"backgroundColor": "#FFFFFF", "borderBottom": "1px solid #E3E8ED"},
         style_data_conditional=[{"if": {"filter_query": '{rol} = "Modelo original"'},
-                                 "backgroundColor": "#FDEBD0", "fontWeight": "bold"}])
+                                 "backgroundColor": "#FDF3EA", "fontWeight": "bold"},
+                                {"if": {"filter_query": '{rol} = "Modelo original"', "column_id": "nombre"},
+                                 "borderLeft": "4px solid " + plots.SGW}])
 
 
 def opciones_modelos():
@@ -72,88 +85,97 @@ def layout():
     conf = data.confirmatorio("friedman.json")
     rangos = data.confirmatorio("friedman_rangos.csv").set_index(data.confirmatorio("friedman_rangos.csv").columns[0])
     nombres = dict(zip(data.tabla_maestra().modelo, data.tabla_maestra().nombre))
+    nota_navegador = html.P([
+        html.B("La predicción corre en tu navegador. "),
+        f"En el servidor, una predicción a 1280×720 sube la memoria a unos {data.PICO_MEMORIA_MB} MB y el plan "
+        f"gratuito de Render tiene 512 MB. Por eso este despliegue te envía el mismo modelo ONNX ({mb} MB, se "
+        "descarga una vez) y lo ejecuta en tu equipo con onnxruntime-web. Necesita un computador con Chrome, Edge o "
+        "Firefox y ~1,3 GB de memoria libre; tarda entre 5 y 20 s. La imagen no sale de tu equipo salvo para la "
+        "validación y el aviso fuera de dominio, que no la guardan."], className="nota panel mt-3 mb-0 py-2")
     return html.Div([
-        html.H2("Modelos"),
-        html.H4("Tabla de líderes"),
-        html.P("Top 10 de la revisión sistemática, los baselines fuertes (Mask R-CNN, YOLOv8, SOLOv2), el clásico y "
-               "el modelo original. F1 de instancia por grupo en test (media y desviación entre semillas). Ordena "
-               "con las flechas y filtra escribiendo bajo cada encabezado (por ejemplo «> 0.7»).",
-               className="small"),
-        lider(),
-        html.P("Latencia GPU: RTX 3060, lote 1, mediana (E2). SGW es la misma red que Mask R-CNN en inferencia, así "
-               "que comparte parámetros, FLOPs y latencia. Latencia CPU: ONNX Runtime FP16, solo para los modelos "
-               "exportados. ECE: calibración del score de detección (E2).", className="small text-muted"),
+        ui.encabezado("Modelos", "Tabla de líderes, predicción en vivo con su explicación, diagnóstico del modelo "
+                      "elegido y comparación estadística.", etiqueta="Modelos"),
+        ui.seccion("Tabla de líderes", ui.tarjeta(
+            lider(),
+            html.P("Latencia GPU: RTX 3060, lote 1, mediana (E2). SGW es la misma red que Mask R-CNN en inferencia, "
+                   "así que comparte parámetros, FLOPs y latencia. Latencia CPU: ONNX Runtime FP16, solo para los "
+                   "modelos exportados. ECE: calibración del score de detección (E2).", className="nota mt-3 mb-0")),
+            descripcion="Top 10 de la revisión sistemática, los baselines fuertes (Mask R-CNN, YOLOv8, SOLOv2), el "
+                        "clásico y el modelo original. F1 de instancia por grupo en test (media y desviación entre "
+                        "semillas). Ordena con las flechas y filtra escribiendo bajo cada encabezado (por ejemplo "
+                        "«> 0.7»)."),
 
-        html.H4("Predicción", className="mt-4"),
-        dbc.Tabs([
-            dbc.Tab(label="Galería precalculada", children=[
+        ui.seccion("Predicción", ui.tarjeta(dbc.Tabs([
+            dbc.Tab(label="Predicción en vivo: sube tu imagen", tab_id="vivo", children=[
                 dbc.Row([
-                    dbc.Col([dbc.Label("Imagen de test"),
-                             dcc.Dropdown(id="gal-img", value=galeria[0]["image_id"], clearable=False,
-                                          options=[{"label": f"Imagen {g['image_id']} (grupo {g['grupo']})",
-                                                    "value": g["image_id"]} for g in galeria])], md=4),
-                    dbc.Col([dbc.Label("Mostrar"),
-                             dbc.Checklist(id="gal-capas", value=["real", "sgw_k0.45"], inline=True,
-                                           options=[{"label": "Anotación real", "value": "real"},
-                                                    {"label": "SGW", "value": "sgw_k0.45"},
-                                                    {"label": "Mask R-CNN", "value": "maskrcnn"}])], md=8),
-                ], className="mt-2"),
-                dcc.Graph(id="gal-fig"), html.Div(id="gal-texto"),
-            ]),
-            dbc.Tab(label="Sube tu imagen", children=[
-                dbc.Alert([html.B("La predicción corre en tu navegador. "),
-                           f"En el servidor, una predicción a 1280×720 sube la memoria a unos {data.PICO_MEMORIA_MB} "
-                           "MB y el plan gratuito de Render tiene 512 MB. Por eso este despliegue te envía el mismo "
-                           f"modelo ONNX ({mb} MB, se descarga una vez) y lo ejecuta en tu equipo con onnxruntime-web. "
-                           "Necesita un computador con Chrome, Edge o Firefox y ~1,3 GB de memoria libre; tarda "
-                           "entre 5 y 20 s. La imagen no sale de tu equipo salvo para la validación y el aviso fuera "
-                           "de dominio, que no la guardan."],
-                          color="info", className="mt-2") if not onnx and exportados else html.Div(),
-                dbc.Row([
-                    dbc.Col([dbc.Label("Modelo"),
+                    dbc.Col([html.Div("1 · Modelo", className="paso-pred"),
                              dcc.Dropdown(id="vivo-modelo", options=[{"label": data.tabla_maestra().set_index(
                                  "modelo").nombre.get(m, m), "value": m} for m in exportados],
-                                 value="sgw_k0.45" if "sgw_k0.45" in exportados else next(iter(exportados), None), clearable=False, disabled=not exportados)],
-                            md=4),
-                    dbc.Col(dcc.Upload(id="vivo-subir", disabled=not exportados, max_size=inference.MAX_BYTES,
-                                       accept="image/png,image/jpeg,image/bmp,image/tiff",
-                                       children=html.Div(["Arrastra una imagen o ", html.A("elígela"),
-                                                          " (PNG/JPEG, máx. 8 MB)"]),
-                                       className="border border-2 rounded p-3 text-center"), md=8),
-                ], className="mt-2"),
-                dcc.Loading(html.Div(id="vivo-salida", className="mt-2")),
-                html.Div(id="nav-resultado", className="mt-2"),
+                                 value="sgw_k0.45" if "sgw_k0.45" in exportados else next(iter(exportados), None),
+                                 clearable=False, disabled=not exportados)], md=4),
+                    dbc.Col([html.Div("2 · Imagen", className="paso-pred"),
+                             dcc.Upload(id="vivo-subir", disabled=not exportados, max_size=inference.MAX_BYTES,
+                                        accept="image/png,image/jpeg,image/bmp,image/tiff",
+                                        children=html.Div([html.B("Arrastra una imagen aquí"), " o ", html.A("elígela"),
+                                                           html.Span(" · PNG o JPEG, máx. 8 MB", className="nota")]),
+                                        className="zona-subida")], md=8),
+                ], className="g-3 mt-2"),
+                nota_navegador if not onnx and exportados else html.Div(),
+                dcc.Loading(html.Div(id="vivo-salida", className="mt-3")),
+                html.Div(id="nav-resultado"),
                 dcc.Store(id="nav-config", data=config_navegador()), dcc.Store(id="nav-imagen"),
             ]),
-        ]),
+            dbc.Tab(label="Galería precalculada", tab_id="galeria", children=[
+                html.Div([
+                    html.Div([dbc.Label("Imagen de test"),
+                              dcc.Dropdown(id="gal-img", value=galeria[0]["image_id"], clearable=False,
+                                           options=[{"label": f"Imagen {g['image_id']} (grupo {g['grupo']})",
+                                                     "value": g["image_id"]} for g in galeria])]),
+                    html.Div([dbc.Label("Mostrar"),
+                              dbc.Checklist(id="gal-capas", value=["real", "sgw_k0.45"], inline=True,
+                                            options=[{"label": "Anotación real", "value": "real"},
+                                                     {"label": "SGW", "value": "sgw_k0.45"},
+                                                     {"label": "Mask R-CNN", "value": "maskrcnn"}])],
+                             style={"maxWidth": "none"}),
+                ], className="controles mt-3"),
+                dcc.Graph(id="gal-fig", config={"displaylogo": False}), html.Div(id="gal-texto"),
+            ]),
+        ], active_tab="vivo"), clase="prediccion"),
+            descripcion="Elige el modelo y sube una imagen: arriba aparece el conteo, y debajo la máscara predicha "
+                        "y su explicación local. La galería muestra predicciones precalculadas sobre imágenes de test."),
 
-        html.H4("Diagnóstico del modelo seleccionado", className="mt-4"),
-        dbc.Row([dbc.Col(dcc.Dropdown(id="diag-modelo", options=opciones_modelos(), value="sgw_k0.45",
-                                      clearable=False), md=4)]),
-        dbc.Row([dbc.Col(dcc.Graph(id="diag-f1"), lg=6), dbc.Col(dcc.Graph(id="diag-dice"), lg=6)]),
-        html.P("💡 En segmentación de instancias el diagnóstico equivalente a la matriz de confusión es el conteo de "
-               "aciertos (TP), falsas detecciones (FP) y tornillos perdidos (FN) por imagen. Los puntos por debajo "
-               "de la diagonal del Dice semántico frente al F1 de instancia son imágenes donde el modelo pinta los "
-               "píxeles correctos pero fusiona o parte tornillos.", className="insight"),
+        ui.seccion("Diagnóstico del modelo seleccionado", ui.tarjeta(
+            dbc.Row([dbc.Col(dcc.Graph(id="diag-f1", config={"displaylogo": False}), lg=6),
+                     dbc.Col(dcc.Graph(id="diag-dice", config={"displaylogo": False}), lg=6)]),
+            ui.insight("💡 En segmentación de instancias el diagnóstico equivalente a la matriz de confusión es el "
+                       "conteo de aciertos (TP), falsas detecciones (FP) y tornillos perdidos (FN) por imagen. Los "
+                       "puntos por debajo de la diagonal del Dice semántico frente al F1 de instancia son imágenes "
+                       "donde el modelo pinta los píxeles correctos pero fusiona o parte tornillos."),
+            controles=html.Div([dbc.Label("Modelo"),
+                                dcc.Dropdown(id="diag-modelo", options=opciones_modelos(), value="sgw_k0.45",
+                                             clearable=False)]))),
 
-        html.H4("Comparación estadística", className="mt-4"),
-        dbc.Row([
-            dbc.Col([dcc.Graph(figure=plots.diferencia_critica(rangos.iloc[:, 0], conf["CD"], nombres=nombres)),
-                     html.P(f"Friedman χ² = {conf['chi2']:.1f} (p = {conf['p_chi2']:.1e}). SGW tiene el mejor "
-                            f"rango medio ({conf['rango_sgw']:.2f}), pero dentro de la diferencia crítica "
-                            f"({conf['CD']:.2f}) de los modelos de dos etapas: no hay superioridad significativa.",
-                            className="small text-muted")], lg=6),
-            dbc.Col([dcc.Graph(figure=plots.pareto(data.tabla_maestra())),
-                     html.P("💡 Mask R-CNN y SGW están en la frontera: los YOLO son 3 veces más rápidos, pero "
-                            "pierden entre 0,1 y 0,3 de F1.", className="insight")], lg=6),
-        ]),
-        html.H4("Interpretabilidad global (E2)", className="mt-4"),
-        html.P("Mapas de oclusión de los tres mejores modelos del E2 (capítulo 5.3 del informe del E2), con "
-               "fidelidad (curvas de borrado) y estabilidad entre semillas. SGW comparte la arquitectura de Mask "
-               "R-CNN; su diferencia está en qué propuestas se entrenan como positivas, que se compara en la "
-               "página del modelo original.", className="small"),
-        html.Img(src=dash.get_asset_url("e2_mapas_oclusion.jpg"), className="img-fluid",
-                 alt="Mapas de oclusión de Mask R-CNN, HTC y Cascade sobre imágenes de test (E2)"),
+        ui.seccion("Comparación estadística", dbc.Row([
+            dbc.Col(ui.tarjeta(
+                dcc.Graph(figure=plots.diferencia_critica(rangos.iloc[:, 0], conf["CD"], nombres=nombres),
+                          config={"displaylogo": False}),
+                html.P(f"Friedman χ² = {conf['chi2']:.1f} (p = {conf['p_chi2']:.1e}). SGW tiene el mejor rango medio "
+                       f"({conf['rango_sgw']:.2f}), pero dentro de la diferencia crítica ({conf['CD']:.2f}) de los "
+                       "modelos de dos etapas: no hay superioridad significativa.", className="nota mt-2 mb-0")),
+                lg=6),
+            dbc.Col(ui.tarjeta(
+                dcc.Graph(figure=plots.pareto(data.tabla_maestra()), config={"displaylogo": False}),
+                ui.insight("💡 Mask R-CNN y SGW están en la frontera: los YOLO son 3 veces más rápidos, pero pierden "
+                           "entre 0,1 y 0,3 de F1.")), lg=6),
+        ], className="g-tarjetas")),
+
+        ui.seccion("Interpretabilidad global (E2)", ui.tarjeta(
+            html.Img(src=dash.get_asset_url("e2_mapas_oclusion.jpg"), className="img-fluid rounded",
+                     alt="Mapas de oclusión de Mask R-CNN, HTC y Cascade sobre imágenes de test (E2)")),
+            descripcion="Mapas de oclusión de los tres mejores modelos del E2 (capítulo 5.3 del informe del E2), con "
+                        "fidelidad (curvas de borrado) y estabilidad entre semillas. SGW comparte la arquitectura de "
+                        "Mask R-CNN; su diferencia está en qué propuestas se entrenan como positivas, que se compara "
+                        "en la página del modelo original."),
     ])
 
 
@@ -215,27 +237,34 @@ def vivo(contenido, modelo):
         return dbc.Alert("No se pudo procesar la imagen con el modelo.", color="danger")
     lo, hi = r["intervalo_90"]
     return html.Div(avisos + [
+        html.Div([
+            html.Div([str(r["n"]), html.Small("tornillos detectados")], className="resultado-n"),
+            html.Span(["Intervalo conforme 90 %: ", html.B(f"{lo} a {hi}")], className="resultado-dato"),
+            html.Span(["Modelo: ", html.B(data.tabla_maestra().set_index("modelo").nombre.get(modelo, modelo))],
+                      className="resultado-dato"),
+            html.Span(["Latencia: ", html.B(f"{r['latencia_ms']:.0f} ms")], className="resultado-dato"),
+        ], className="resultado-cabeza"),
         dbc.Row([
-            dbc.Col([html.H6("Máscaras predichas"),
-                     html.Img(src=explain.a_base64(explain.superponer(im, r)), className="img-fluid",
-                              alt="Imagen con las máscaras de tornillo predichas en naranja")], lg=6),
-            dbc.Col([html.H6("Explicación local: mapa de confianza por píxel"),
-                     html.Img(src=explain.a_base64(explain.mapa_confianza(r)), className="img-fluid",
-                              alt="Mapa de confianza: probabilidad de máscara por score de cada detección")],
-                    lg=6),
-        ]),
-        dbc.Table([html.Tbody([
-            html.Tr([html.Th("Tornillos detectados"), html.Td(r["n"])]),
-            html.Tr([html.Th("Intervalo conforme 90 % del número de tornillos"),
-                     html.Td(f"{lo} a {hi} (cobertura empírica en test: {r['cobertura_test']:.0%})")]),
-            html.Tr([html.Th("Umbral de score (elegido en val)"), html.Td(f"{r['umbral']:.2f}")]),
-            html.Tr([html.Th("Latencia (CPU, ONNX Runtime)"), html.Td(f"{r['latencia_ms']:.0f} ms")]),
-            html.Tr([html.Th("Scores de las detecciones"),
-                     html.Td(", ".join(f"{s:.2f}" for s in sorted(r["scores"], reverse=True)[:15]) or "—")]),
-        ])], size="sm", bordered=True, className="mt-2"),
-        html.Small("El score de detección no está calibrado como probabilidad (ECE del E2); el intervalo del "
-                   "conteo sí tiene garantía de cobertura bajo intercambiabilidad, que entre escenas no se cumple "
-                   "del todo.", className="text-muted"),
+            dbc.Col([html.Div("Máscaras predichas", className="figura-titulo"),
+                     html.Img(src=explain.a_base64(explain.superponer(im, r)), className="figura-pred",
+                              alt="Imagen con las máscaras de tornillo predichas en naranja")], lg=8),
+            dbc.Col([html.Div("Explicación local: mapa de confianza por píxel", className="figura-titulo"),
+                     html.Img(src=explain.a_base64(explain.mapa_confianza(r)), className="figura-pred",
+                              alt="Mapa de confianza: probabilidad de máscara por score de cada detección"),
+                     dbc.Table([html.Tbody([
+                         html.Tr([html.Th("Tornillos detectados"), html.Td(r["n"])]),
+                         html.Tr([html.Th("Intervalo conforme 90 % del número de tornillos"),
+                                  html.Td(f"{lo} a {hi} (cobertura empírica en test: {r['cobertura_test']:.0%})")]),
+                         html.Tr([html.Th("Umbral de score (elegido en val)"), html.Td(f"{r['umbral']:.2f}")]),
+                         html.Tr([html.Th("Latencia (CPU, ONNX Runtime)"), html.Td(f"{r['latencia_ms']:.0f} ms")]),
+                         html.Tr([html.Th("Scores de las detecciones"),
+                                  html.Td(", ".join(f"{s:.2f}" for s in sorted(r["scores"], reverse=True)[:15])
+                                          or "—")]),
+                     ])], className="tabla-wdsd tabla-ficha mt-3")], lg=4),
+        ], className="g-4"),
+        html.P("El score de detección no está calibrado como probabilidad (ECE del E2); el intervalo del "
+               "conteo sí tiene garantía de cobertura bajo intercambiabilidad, que entre escenas no se cumple "
+               "del todo.", className="nota mt-3 mb-0"),
     ])
 
 
@@ -264,7 +293,7 @@ def diagnostico(m):
     p = data.csv("por_imagen.csv")
     d = p[p.modelo == m]
     f1 = go.Figure()
-    for k, c in (("tp", plots.REAL), ("fp", plots.SGW), ("fn", plots.OSCURO)):
+    for k, c in (("tp", plots.REAL), ("fp", plots.GRIS), ("fn", plots.OSCURO)):  # el naranja queda para SGW
         f1.add_bar(x=d.image_id.astype(str), y=d[k], name=k.upper(), marker_color=c)
     f1.update_layout(barmode="stack", title="Aciertos, falsas detecciones y pérdidas por imagen (media en semillas)",
                      xaxis_title="Imagen de test", yaxis_title="Tornillos", xaxis=dict(showticklabels=False))

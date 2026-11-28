@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py MODEL_CARD.md ./
 COPY pages/ pages/
-COPY src/__init__.py src/data.py src/plots.py src/inference.py src/explain.py src/
+COPY src/__init__.py src/data.py src/plots.py src/inference.py src/explain.py src/ui.py src/
 COPY assets/ assets/
 COPY data/ data/
 COPY results/confirmatorio/ results/confirmatorio/
