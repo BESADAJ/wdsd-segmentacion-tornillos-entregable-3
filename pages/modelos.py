@@ -54,7 +54,6 @@ def config_navegador() -> dict:
         "modo": "navegador",
         "ort_js": dash.get_asset_url("vendor/ort/ort.wasm.min.js"),
         "ort_dir": dash.get_asset_url("vendor/ort/"),
-        "max_bytes": inference.MAX_BYTES,
         "radio": conf["radio"]["0.9"],
         "cobertura": conf["cobertura_test"]["0.9"],
         "modelos": {m: {"url": dash.get_relative_path(f"/modelo/{m}.onnx"), "umbral": meta["umbral_score"],
@@ -124,7 +123,7 @@ def layout():
                 ], className="mt-2"),
                 dcc.Loading(html.Div(id="vivo-salida", className="mt-2")),
                 html.Div(id="nav-resultado", className="mt-2"),
-                dcc.Store(id="nav-config", data=config_navegador()),
+                dcc.Store(id="nav-config", data=config_navegador()), dcc.Store(id="nav-imagen"),
             ]),
         ]),
 
@@ -240,10 +239,23 @@ def vivo(contenido, modelo):
     ])
 
 
+@callback(Output("nav-imagen", "data"), Input("vivo-subir", "contents"), prevent_initial_call=True)
+def nav_imagen(contenido):
+    """Modo navegador: Python decodifica, valida y redimensiona (igual que en modo servidor) y entrega al navegador la
+    imagen de 1280x720 sin pérdida. Así el modelo ve los mismos píxeles en los dos modos. None si la entrada es
+    inválida (el motivo lo muestra `vivo`)."""
+    if data.INFERENCIA_VIVO or not contenido:
+        return no_update
+    try:
+        return inference.png_entrada(inference.decodificar(contenido))
+    except inference.EntradaInvalida:
+        return None
+
+
 # Modo navegador: el resultado lo pinta JS en #nav-resultado. Cambiar de modelo repite la predicción sobre la misma
 # imagen sin volver a subirla.
 clientside_callback(ClientsideFunction("wdsd", "predecir"), Output("nav-resultado", "children"),
-                    Input("vivo-subir", "contents"), Input("vivo-modelo", "value"), State("nav-config", "data"),
+                    Input("nav-imagen", "data"), Input("vivo-modelo", "value"), State("nav-config", "data"),
                     prevent_initial_call=True)
 
 

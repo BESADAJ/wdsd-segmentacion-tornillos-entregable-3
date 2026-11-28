@@ -132,3 +132,20 @@ def test_config_navegador(app, monkeypatch):
     assert cfg["radio"] == data.jsn("conforme.json")["radio"]["0.9"]
     # en modo navegador el callback de Python valida y avisa, pero no ejecuta el modelo
     assert modelos.vivo("data:image/png;base64,xxx", "sgw_k0.45").__class__.__name__ == "Alert"
+
+
+def test_nav_imagen_entrega_los_pixeles_del_servidor(app, monkeypatch):
+    """Modo navegador: la imagen que recibe onnxruntime-web es exactamente la que usa el modo servidor."""
+    import numpy as np
+    from PIL import Image
+    from pages import modelos
+    from src import data, inference
+    ruta = RAIZ / "data" / "galeria" / "14.jpg"
+    contenido = "data:image/jpeg;base64," + base64.b64encode(ruta.read_bytes()).decode()
+    assert modelos.nav_imagen(contenido).__class__.__name__ == "NoUpdate"  # modo servidor: no hace nada
+    monkeypatch.setattr(data, "INFERENCIA_VIVO", False)
+    url = modelos.nav_imagen(contenido)
+    recibida = np.asarray(Image.open(io.BytesIO(base64.b64decode(url.split(",", 1)[1]))))
+    esperada = np.asarray(inference.redimensionar(inference.decodificar(contenido)))
+    assert recibida.shape == (720, 1280, 3) and np.array_equal(recibida, esperada)
+    assert modelos.nav_imagen("data:image/png;base64,AAAA") is None

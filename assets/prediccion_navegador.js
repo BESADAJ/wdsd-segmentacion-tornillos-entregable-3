@@ -4,12 +4,11 @@
  * Por qué: una predicción con ONNX Runtime en el servidor sube el proceso a ~0,9 GB y el plan gratuito de Render da
  * 512 MB. Aquí el servidor solo entrega el mismo artefacto (/modelo/<nombre>.onnx, 84 MB, se descarga una vez y queda
  * en la caché del navegador) y onnxruntime-web 1.20.1 (assets/vendor/ort/, WebAssembly) lo ejecuta en el equipo de
- * quien abre el dashboard. Mismo grafo y mismos pesos que src/inference.py; la única diferencia posible es el
- * redimensionado a 1280x720 (canvas del navegador en vez de Pillow).
+ * quien abre el dashboard. Mismo grafo y mismos pesos que src/inference.py.
  *
- * Reparto del trabajo: el callback de Python `vivo` valida la entrada y da el aviso fuera de dominio; esta función
- * repite las comprobaciones baratas (tamaño y dimensiones) solo para no ejecutar el modelo sobre una entrada que
- * Python ya rechazó, y en ese caso no dice nada (el mensaje lo muestra Python).
+ * Reparto del trabajo: Python (pages/modelos.py:nav_imagen y vivo) decodifica, valida, da el aviso fuera de dominio y
+ * redimensiona a 1280x720 con Pillow, exactamente como en modo servidor, y pasa esa imagen en PNG (sin pérdida) a
+ * esta función. Así el modelo recibe los mismos píxeles en los dos modos y da las mismas detecciones.
  */
 (function () {
   "use strict";
@@ -130,20 +129,14 @@
     return cv.toDataURL("image/jpeg", 0.85);
   }
 
-  async function predecir(contenido, modelo, cfg) {
-    if (!cfg || cfg.modo !== "navegador" || !contenido || !modelo || !cfg.modelos[modelo]) {
+  async function predecir(imagen, modelo, cfg) {
+    if (!cfg || cfg.modo !== "navegador" || !modelo || !cfg.modelos[modelo]) {
       return window.dash_clientside.no_update;
     }
-    if (estado.ocupado) return aviso("warning", "Espera a que termine la predicción anterior y vuelve a subir la imagen.");
-    // Mismas comprobaciones baratas que src/inference.py:decodificar; si fallan, Python ya muestra el motivo.
-    var b64 = contenido.slice(contenido.indexOf(",") + 1);
-    if (b64.length * 3 / 4 > cfg.max_bytes) return null;
-    if (/^data:image\/tiff/i.test(contenido)) {
-      return aviso("warning", "Tu navegador no decodifica TIFF: conviértela a PNG o JPEG para predecir aquí.");
-    }
-    var bmp;
-    try { bmp = await createImageBitmap(await (await fetch(contenido)).blob()); } catch (e) { return null; }
-    if (Math.min(bmp.width, bmp.height) < 64 || Math.max(bmp.width, bmp.height) > 6000) return null;
+    if (!imagen) return null;  // entrada inválida: el motivo lo muestra Python
+    if (estado.ocupado) return aviso("warning", "Espera a que termine la predicción anterior y vuelve a intentarlo.");
+    var bmp = await createImageBitmap(await (await fetch(imagen)).blob(),
+                                      {colorSpaceConversion: "none", premultiplyAlpha: "none"});
 
     estado.ocupado = true;
     var nombre = cfg.modelos[modelo].nombre;
@@ -152,10 +145,9 @@
       var ort = await cargarOrt(cfg);
       var s = await sesion(ort, cfg, modelo, nombre);
 
-      // Preprocesado de src/inference.py:predecir: RGB a 1280x720, CHW float32 en [0, 1].
+      // Preprocesado de src/inference.py:predecir: la imagen ya viene a 1280x720 (Pillow); CHW float32 en [0, 1].
       var cv = lienzo(W, H), ctx = cv.getContext("2d");
-      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(bmp, 0, 0, W, H);
+      ctx.drawImage(bmp, 0, 0);
       bmp.close();
       var px = ctx.getImageData(0, 0, W, H).data, N = W * H, x = new Float32Array(3 * N);
       for (var i = 0; i < N; i++) {
