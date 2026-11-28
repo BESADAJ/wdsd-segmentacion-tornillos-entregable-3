@@ -19,6 +19,22 @@ RoI:  positivas s >= 0,5 ; el resto, fondo      (box_similarity y assign_targets
 El resto de Mask R-CNN (pérdidas, muestreo, cabezas, inferencia) no cambia."""
 
 
+FORMULA = r"""
+$$
+s(g,b)=\exp\!\left(-\frac{W_2(g,b)}{D(g)}\right)
+$$
+
+$$
+D(g)=\kappa\left(\sqrt{w\cdot h}+c\right),\qquad \kappa=0{,}45,\quad c=4\ \text{px}
+$$
+
+$g$: caja real del tornillo, de ancho $w$ y alto $h$. $b$: ancla del RPN o propuesta de las cabezas.
+$W_2(g,b)=\lVert p(g)-p(b)\rVert_2$ con $p=(c_x,\,c_y,\,w/2,\,h/2)$: distancia de Wasserstein-2 entre las
+gaussianas de las dos cajas. $D(g)$: escala del propio tornillo, con piso $c$ (el paso de P2). $s$ va de 0 a 1 y
+reemplaza al IoU en la asignación, con los mismos umbrales.
+"""
+
+
 def tabla(df: pd.DataFrame, cols: dict):
     d = df[list(cols)].rename(columns=cols)
     return dbc.Table.from_dataframe(d.round(3), responsive=True, hover=True, className="tabla-wdsd")
@@ -44,6 +60,22 @@ def layout():
                     "tornillos (9 de 10 semillas), pero la ganancia se concentra en una escena y la prueba "
                     "preregistrada por grupo no la confirma (+0,012)."], className="mb-0"),
         ], className="panel-tinta mt-3"),
+        ui.seccion("Arquitectura: Mask R-CNN (modelo base) y dónde interviene SGW", ui.tarjeta(
+            html.Img(src=dash.get_asset_url("arquitectura_sgw.svg"), className="img-fluid w-100",
+                     alt="Diagrama: arriba, la red de Mask R-CNN (imagen, backbone ResNet-50, FPN, RPN, RoIAlign, "
+                         "cabezas de caja y de máscara, salida). Abajo, en naranja, el aporte de SGW durante el "
+                         "entrenamiento: en el RPN y en las cabezas decide qué anclas y propuestas son positivas con la "
+                         "similitud s en lugar del IoU, con los mismos umbrales. Ejemplo: una caja de 10 px desplazada "
+                         "4 px tiene IoU 0,43 y s 0,53; una de 100 px, IoU 0,92 y s 0,92."),
+            dcc.Markdown(FORMULA, mathjax=True, className="formula"),
+            html.P("Configuración de src/original_model.py (la misma del E1 y el E2). Los rivales de dos etapas de la "
+                   "tabla de líderes (HTC, Cascade, MS R-CNN, PointRend) también parten de este esquema, con cabezas "
+                   "en cascada o de refinamiento; el resto son otras familias (una etapa tipo YOLO, kernels, "
+                   "transformer). Por eso la comparación más directa del modelo original es con Mask R-CNN: comparten "
+                   "la red y difieren en cómo aprenden qué propuesta es un tornillo.", className="nota mt-2 mb-0")),
+            descripcion="Gris: la red de Mask R-CNN con la configuración del repositorio, que SGW conserva. Naranja: el "
+                        "aporte de SGW, un criterio nuevo para decidir qué anclas y propuestas son positivas durante el "
+                        "entrenamiento, pensado para tornillos de unos 10 px."),
         ui.seccion("Procedencia y mecanismo", dbc.Row([
             dbc.Col(ui.tarjeta(html.Ul([
                 html.Li(["Fuente: Normalized Wasserstein Distance (NWD) para detección de objetos diminutos en "
@@ -56,7 +88,7 @@ def layout():
                          "gradiente no nulo donde IoU = 0; para objetos diminutos se reduce a NWD con C = κc. "
                          "Proposición 2: el IoU tiene sensibilidad 2/a, no acotada cuando a → 0."]),
                 html.Li(["Paper guía (Kalitsios et al., 2022, ICRCV): Mask R-CNN ResNet-101 en WDSD con la "
-                         "asignación estándar por IoU. SGW conserva esa arquitectura y cambia solo la asignación. "
+                         "asignación estándar por IoU. SGW parte de esa arquitectura y su aporte está en la asignación. "
                          "La limitación verificada del paper (fuga por la partición aleatoria) la corrige la "
                          "partición agrupada; SGW ataca otra, medida en el E2: el recall de los tornillos del "
                          "tercil pequeño no pasa de 0,37 en ningún modelo."]),

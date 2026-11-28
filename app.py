@@ -57,7 +57,7 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Modelo original", href="/original", active="exact")),
         dbc.NavItem(dbc.NavLink("Ficha del modelo", href="/ficha", active="exact")),
     ],
-    brand="WDSD · segmentación de tornillos",
+    brand="WDSD · Segmentación de tornillos",
     brand_href="/",
     color="white",
     dark=False,
