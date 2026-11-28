@@ -195,3 +195,8 @@ pre.pseudocodigo { background: var(--fondo); border: 1px solid var(--borde); bor
 .Select-control { border-color: #CDD5DD !important; border-radius: 6px !important; }
 .is-focused:not(.is-open) > .Select-control { border-color: var(--tinta) !important; box-shadow: none !important; }
 .tabla-ficha.ancha th { width: 36%; }
+
+/* Fórmula tipografiada (MathJax de dcc.Markdown) bajo el diagrama de arquitectura */
+.formula { margin-top: 16px; padding: 16px 20px; background: var(--fondo); border-radius: 8px; font-size: 15px; }
+.formula mjx-container[display="true"] { font-size: 125%; overflow-x: auto; overflow-y: hidden; margin: 4px 0 8px; }
+.formula p { margin-bottom: 0; color: var(--tinta); }
