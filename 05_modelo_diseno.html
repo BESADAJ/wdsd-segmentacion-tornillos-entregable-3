@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modelo original: diseño, hipótesis y teoría &#8212; Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '05_modelo_diseno';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Modelo original: implementación" href="06_implementacion.html" />
+    <link rel="prev" title="Revisión de literatura y novedad" href="04_literatura_novedad.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="00_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_introduccion.html">
+                    Introducción
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_trazabilidad.html">Trazabilidad de correcciones del Entregable 2 (Bloque A)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">Datos: EDA y auditoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_benchmark.html">Modelos benchmark, selección y exportación (Bloque B)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_literatura_novedad.html">Revisión de literatura y novedad</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Modelo original: diseño, hipótesis y teoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_implementacion.html">Modelo original: implementación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_protocolo_validacion.html">Protocolo y validación estadística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_evaluacion_ampliada.html">Evaluación ampliada y robustez</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_dashboard.html">Dashboard y despliegue (Bloques E y F)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">Conclusiones y limitaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_reproducibilidad.html">Reproducibilidad y bibliografía</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/BESADAJ/wdsd-segmentacion-tornillos-entregable-3" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Repositorio de origen"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/05_modelo_diseno.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Modelo original: diseño, hipótesis y teoría</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitacion-que-se-ataca-d1">1. Limitación que se ataca (D1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mecanismo">2. Mecanismo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuente-y-por-que-se-transfiere-d2">2.1 Fuente y por qué se transfiere (D2)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modificacion-algoritmica-lo-propio">2.2 Modificación algorítmica (lo propio)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pseudocodigo">2.3 Pseudocódigo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#teoria">3. Teoría</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demostraciones">Demostraciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verificacion-numerica">Verificación numérica</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#honestidad-teorica">Honestidad teórica</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hipotesis-del-mecanismo-y-predicciones-secundarias-d3-d4">4. Hipótesis del mecanismo y predicciones secundarias (D3, D4)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#criterio-de-exito-y-de-fracaso-d5-y-hallazgo-alternativo-e3-14-5-9">5. Criterio de éxito y de fracaso (D5) y hallazgo alternativo (E3 §14.5.9)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#piloto-de-asignacion-2026-11-23-particion-de-desarrollo-sin-entrenar">6. Piloto de asignación (2026-11-23, partición de desarrollo, sin entrenar)</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modelo-original-diseno-hipotesis-y-teoria">
+<h1>Modelo original: diseño, hipótesis y teoría<a class="headerlink" href="#modelo-original-diseno-hipotesis-y-teoria" title="Link to this heading">#</a></h1>
+<p><strong>Estado:</strong> borrador del 2026-11-23, antes de cualquier entrenamiento del modelo original. Las cifras del E2 que se citan son las del repositorio del E2 (commit <code class="docutils literal notranslate"><span class="pre">732845a</span></code>).</p>
+<section id="limitacion-que-se-ataca-d1">
+<h2>1. Limitación que se ataca (D1)<a class="headerlink" href="#limitacion-que-se-ataca-d1" title="Link to this heading">#</a></h2>
+<p><strong>Los modelos de la familia no detectan los tornillos pequeños, y la ceguera es compartida.</strong> Evidencia del E2 (RQ3 y errores compartidos, <code class="docutils literal notranslate"><span class="pre">results/e2/analisis_extra/</span></code> y <code class="docutils literal notranslate"><span class="pre">analisis_extra2/</span></code> del repositorio del E2):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>tercil pequeño (área &lt; 75 px)</p></th>
+<th class="head"><p>mediano (75–157 px)</p></th>
+<th class="head"><p>grande (&gt; 157 px)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Recall de Mask R-CNN (paper guía del E1, mejor modelo del E2)</p></td>
+<td><p>0,31</p></td>
+<td><p>0,69</p></td>
+<td><p>0,79</p></td>
+</tr>
+<tr class="row-odd"><td><p>Recall de HTC / Cascade / MS R-CNN</p></td>
+<td><p>0,32 / 0,28 / 0,30</p></td>
+<td><p>0,70 / 0,69 / 0,71</p></td>
+<td><p>0,80 / 0,78 / 0,75</p></td>
+</tr>
+<tr class="row-even"><td><p>Tornillos de test en el tercil</p></td>
+<td><p>155</p></td>
+<td><p>117</p></td>
+<td><p>117</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>100 de los 389 tornillos de test no los encuentra <strong>ninguno</strong> de los 13 modelos; los tres mejores comparten el 74 % de sus fallos.</p></li>
+<li><p>La correlación media de errores entre modelos es 0,82.</p></li>
+<li><p>Es decir, la limitación no es de una arquitectura sino de algo común a toda la familia. Lo común a los detectores de dos etapas y a la mayoría de los de una etapa es la <strong>asignación de etiquetas por IoU</strong>.</p></li>
+</ul>
+<p>Pendiente antes de congelar: el piloto de asignación (sección 6) sobre la partición de desarrollo, que mide cuántas anclas positivas recibe cada tornillo según su tamaño.</p>
+</section>
+<section id="mecanismo">
+<h2>2. Mecanismo<a class="headerlink" href="#mecanismo" title="Link to this heading">#</a></h2>
+<section id="fuente-y-por-que-se-transfiere-d2">
+<h3>2.1 Fuente y por qué se transfiere (D2)<a class="headerlink" href="#fuente-y-por-que-se-transfiere-d2" title="Link to this heading">#</a></h3>
+<p><strong>Fuente:</strong> NWD, <em>Normalized Gaussian Wasserstein Distance</em> (Wang, Xu, Yang y Yu, 2021, arXiv:2110.13389; versión de revista con el benchmark AI-TOD: Xu et al., <em>ISPRS J. Photogramm. Remote Sens.</em>, 2022). Viene de la detección de objetos diminutos en imágenes aéreas. Modela cada caja como una gaussiana 2D y reemplaza el IoU por</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{NWD}(a,b) = \exp\!\left(-\frac{W_2(\mathcal N_a,\mathcal N_b)}{C}\right),\]</div>
+<p>con <span class="math notranslate nohighlight">\(C\)</span> una constante global (el tamaño medio de los objetos).</p>
+<p><strong>Propiedad estructural compartida:</strong> el tornillo mediano de WDSD mide 10,6 px de diámetro equivalente y el 98,8 % es <em>small</em> según COCO, igual que los objetos de AI-TOD. Con objetos de 8–12 px, un error de 2–3 px de la rejilla de anclas, cuyo paso es 4 px en P2, basta para que el IoU caiga por debajo del umbral, y el tornillo se queda sin ejemplos positivos.</p>
+<p><strong>Por qué no basta con NWD tal cual:</strong> en WDSD el lado de los tornillos va de unos 3 a unos 60 px. Con una <span class="math notranslate nohighlight">\(C\)</span> fija, la tolerancia es la misma en píxeles para todos. Resulta demasiado laxa para los tornillos diminutos frente a su propio tamaño y demasiado estricta para los grandes. Además, los umbrales de Mask R-CNN (0,7/0,3 en RPN, 0,5 en RoI) fueron pensados para el IoU y no tienen una interpretación clara en NWD.</p>
+</section>
+<section id="modificacion-algoritmica-lo-propio">
+<h3>2.2 Modificación algorítmica (lo propio)<a class="headerlink" href="#modificacion-algoritmica-lo-propio" title="Link to this heading">#</a></h3>
+<p>Sea <span class="math notranslate nohighlight">\(g=(x_1,y_1,x_2,y_2)\)</span> la caja de la verdad y <span class="math notranslate nohighlight">\(b\)</span> una caja candidata (ancla o propuesta). Se definen:</p>
+<div class="math notranslate nohighlight">
+\[p(b) = \left(\tfrac{x_1+x_2}{2},\ \tfrac{y_1+y_2}{2},\ \tfrac{x_2-x_1}{2},\ \tfrac{y_2-y_1}{2}\right), \qquad W(g,b) = \lVert p(g)-p(b)\rVert_2 \tag{1}\]</div>
+<p><span class="math notranslate nohighlight">\(W\)</span> es la distancia de Wasserstein-2 entre <span class="math notranslate nohighlight">\(\mathcal N\big((c_x,c_y),\mathrm{diag}(w^2/4,h^2/4)\big)\)</span> de cada caja (Wang et al., 2021, ec. 5).</p>
+<div class="math notranslate nohighlight">
+\[D(g) = \kappa\left(\sqrt{w_g h_g} + c\right), \qquad s(g,b) = \exp\!\left(-\frac{W(g,b)}{D(g)}\right) \tag{2}\]</div>
+<p>Las tres decisiones de diseño:</p>
+<ol class="arabic">
+<li><p><strong>Escala por objeto en lugar de la constante global <span class="math notranslate nohighlight">\(C\)</span>.</strong> <span class="math notranslate nohighlight">\(D\)</span> depende de la verdad, no del conjunto. <span class="math notranslate nohighlight">\(s\)</span> no es simétrica, y no hace falta que lo sea: en la asignación la escala debe fijarla el objeto que se quiere encontrar.</p></li>
+<li><p><strong>Piso <span class="math notranslate nohighlight">\(c\)</span> = 4 px</strong>, el paso de la rejilla de anclas en P2. Se fija a priori y no se ajusta. Impide que la tolerancia se anule en los objetos diminutos y da la cota de Lipschitz del teorema 1.</p></li>
+<li><p><strong>Calibración de <span class="math notranslate nohighlight">\(\kappa\)</span> con el IoU.</strong> En el límite de objetos grandes (<span class="math notranslate nohighlight">\(c\)</span> despreciable), se pide que <span class="math notranslate nohighlight">\(s = 0{,}5\)</span> donde <span class="math notranslate nohighlight">\(\mathrm{IoU}=0{,}5\)</span>:</p>
+<ul class="simple">
+<li><p>traslación de <span class="math notranslate nohighlight">\(w/3\)</span>: <span class="math notranslate nohighlight">\(\kappa = 1/(3\ln 2) = 0{,}481\)</span>;</p></li>
+<li><p>cambio de escala de <span class="math notranslate nohighlight">\(\sqrt 2\)</span>: <span class="math notranslate nohighlight">\(\kappa = (\sqrt2-1)/(\sqrt2\ln 2) = 0{,}423\)</span>.</p></li>
+</ul>
+<p>Se toma <span class="math notranslate nohighlight">\(\kappa_0 = 0{,}45\)</span>, y los umbrales de Mask R-CNN se dejan como están. La búsqueda es <span class="math notranslate nohighlight">\(\kappa\in\kappa_0\times\{0{,}5;\,1;\,2\}\)</span>, con <span class="math notranslate nohighlight">\(T=3\)</span> configuraciones, el mismo presupuesto que la tasa de aprendizaje de cada modelo del E2.</p>
+</li>
+</ol>
+<p><span class="math notranslate nohighlight">\(s\)</span> reemplaza al IoU <strong>en las dos asignaciones de Mask R-CNN</strong>:</p>
+<ul class="simple">
+<li><p>anclas → verdad, en RPN;</p></li>
+<li><p>propuestas → verdad, en la cabeza RoI. De esta asignación dependen también los ejemplos que entrenan la rama de máscara.</p></li>
+</ul>
+<p>Todo lo demás (backbone, anclas de 8–128 px, pérdidas, presupuesto) es idéntico al Mask R-CNN del E1/E2. Código: <code class="docutils literal notranslate"><span class="pre">src/original_model.py</span></code>.</p>
+</section>
+<section id="pseudocodigo">
+<h3>2.3 Pseudocódigo<a class="headerlink" href="#pseudocodigo" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Algoritmo: asignación SGW (una imagen)
+Entrada:  cajas de verdad G (n×4), candidatas B (m×4), kappa &gt; 0, c &gt; 0, umbrales (t_alto, t_bajo)
+Salida:   para cada candidata, índice de la verdad asignada, o FONDO, o IGNORAR
+1. P_G &lt;- p(G); P_B &lt;- p(B)                               # ec. (1)
+2. W[i,j] &lt;- ||P_G[i] - P_B[j]||_2                        # matriz n×m
+3. D[i] &lt;- kappa * (sqrt(w_i h_i) + c)                    # ec. (2)
+4. S[i,j] &lt;- exp(-W[i,j] / D[i])
+5. para cada candidata j: i* &lt;- argmax_i S[i,j]; q &lt;- S[i*,j]
+       si q &gt;= t_alto: asignar i*;  si q &lt; t_bajo: FONDO;  si no: IGNORAR
+6. (solo RPN) para cada verdad i: las candidatas con S[i,j] = max_j S[i,j] se asignan a i   # baja calidad
+Criterio de parada: no aplica (asignación de un paso, sin iteración).
+Complejidad: O(n m) en tiempo y memoria, igual que el IoU.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="teoria">
+<h2>3. Teoría<a class="headerlink" href="#teoria" title="Link to this heading">#</a></h2>
+<p><strong>Supuestos.</strong></p>
+<ul class="simple">
+<li><p>(S1) Cajas alineadas con los ejes, con <span class="math notranslate nohighlight">\(w,h&gt;0\)</span>.</p></li>
+<li><p>(S2) La caja se representa por la gaussiana de la sección 2.2. Es un modelo de la caja, no del objeto: los tornillos son aproximadamente circulares, así que la gaussiana isotrópica es razonable, pero las máscaras no son elipses.</p></li>
+<li><p>(S3) <span class="math notranslate nohighlight">\(\kappa&gt;0\)</span> y <span class="math notranslate nohighlight">\(c&gt;0\)</span>.</p></li>
+</ul>
+<p><strong>Teorema 1 (estabilidad de la asignación SGW).</strong> Bajo (S1)–(S3), para toda verdad <span class="math notranslate nohighlight">\(g\)</span> y candidatas <span class="math notranslate nohighlight">\(b,b'\)</span>:</p>
+<ul class="simple">
+<li><p><strong>(a) Rango e identidad.</strong> <span class="math notranslate nohighlight">\(0 &lt; s(g,b) \le 1\)</span>, y <span class="math notranslate nohighlight">\(s(g,b)=1 \iff b=g\)</span>.</p></li>
+<li><p><strong>(b) Cota de Lipschitz uniforme.</strong>
+$<span class="math notranslate nohighlight">\(|s(g,b)-s(g,b')| \;\le\; \frac{\lVert p(b)-p(b')\rVert_2}{D(g)} \;\le\; \frac{\lVert b-b'\rVert_2}{\sqrt2\,\kappa\,c}.\)</span><span class="math notranslate nohighlight">\(
+La constante no depende del tamaño de \)</span>g$.</p></li>
+<li><p><strong>(c) Sensibilidad no nula.</strong> Si <span class="math notranslate nohighlight">\(b\ne g\)</span>, <span class="math notranslate nohighlight">\(s\)</span> es diferenciable en <span class="math notranslate nohighlight">\(p(b)\)</span> y <span class="math notranslate nohighlight">\(\lVert\nabla_{p(b)} s\rVert = s/D(g) &gt; 0\)</span>.</p></li>
+<li><p><strong>(d) Escala.</strong> Sea <span class="math notranslate nohighlight">\(\rho(g)=\sqrt{A_g}/(\sqrt{A_g}+c)\in(0,1)\)</span>, con <span class="math notranslate nohighlight">\(A_g=w_gh_g\)</span>, y sea <span class="math notranslate nohighlight">\(s_0\)</span> la similitud con <span class="math notranslate nohighlight">\(c=0\)</span>. Entonces <span class="math notranslate nohighlight">\(s(g,b)=s_0(g,b)^{\rho(g)}\)</span>, y para <span class="math notranslate nohighlight">\(\lambda&gt;0\)</span>, <span class="math notranslate nohighlight">\(s_c(\lambda g,\lambda b)=s_{c/\lambda}(g,b)\)</span>. En consecuencia:</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(s_0\)</span> es invariante a la escala;</p></li>
+<li><p><span class="math notranslate nohighlight">\(s\to s_0\)</span> cuando <span class="math notranslate nohighlight">\(A_g\to\infty\)</span>;</p></li>
+<li><p>cuando <span class="math notranslate nohighlight">\(A_g\to 0\)</span>, <span class="math notranslate nohighlight">\(s\to\exp(-W/(\kappa c))\)</span>, que es NWD con <span class="math notranslate nohighlight">\(C=\kappa c\)</span>.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Proposición 2 (el IoU no tiene cota uniforme).</strong> Sea <span class="math notranslate nohighlight">\(g\)</span> un cuadrado de lado <span class="math notranslate nohighlight">\(a\)</span> y <span class="math notranslate nohighlight">\(b\)</span> su traslación en <span class="math notranslate nohighlight">\(t\in[0,a)\)</span> píxeles a lo largo de un eje. Entonces <span class="math notranslate nohighlight">\(\mathrm{IoU}=(a-t)/(a+t)\)</span> y <span class="math notranslate nohighlight">\(\left|\partial\,\mathrm{IoU}/\partial t\right|_{t=0} = 2/a\)</span>, que no está acotado cuando <span class="math notranslate nohighlight">\(a\to0\)</span>. Además, <span class="math notranslate nohighlight">\(\mathrm{IoU}\equiv0\)</span> en el abierto de candidatas disjuntas de <span class="math notranslate nohighlight">\(g\)</span>, donde su gradiente es nulo.</p>
+<p><strong>Corolario 3 (margen de estabilidad).</strong> Si una candidata tiene <span class="math notranslate nohighlight">\(s(g,b)\ge \tau+m\)</span> con <span class="math notranslate nohighlight">\(m&gt;0\)</span>, sigue siendo positiva (<span class="math notranslate nohighlight">\(s\ge\tau\)</span>) ante cualquier perturbación con <span class="math notranslate nohighlight">\(\lVert b-b'\rVert_2 &lt; \sqrt2\,\kappa\,c\,m\)</span>. Con <span class="math notranslate nohighlight">\(\kappa_0=0{,}45\)</span> y <span class="math notranslate nohighlight">\(c=4\)</span>: <span class="math notranslate nohighlight">\(2{,}55\,m\)</span> px, para cualquier tamaño de tornillo.</p>
+<p>En cambio, con el IoU, en un tornillo de 8 px un desplazamiento de 1 px resta unos 0,22 de IoU.</p>
+<section id="demostraciones">
+<h3>Demostraciones<a class="headerlink" href="#demostraciones" title="Link to this heading">#</a></h3>
+<p><strong>(a)</strong> <span class="math notranslate nohighlight">\(W\ge0\)</span> y <span class="math notranslate nohighlight">\(D&gt;0\)</span>, así que <span class="math notranslate nohighlight">\(s=e^{-W/D}\in(0,1]\)</span>. <span class="math notranslate nohighlight">\(s=1 \iff W=0 \iff p(b)=p(g)\)</span>, y <span class="math notranslate nohighlight">\(p\)</span> es una biyección lineal de <span class="math notranslate nohighlight">\(\mathbb R^4\)</span> (ver (b)), así que <span class="math notranslate nohighlight">\(p(b)=p(g)\iff b=g\)</span>. ∎</p>
+<p><strong>(b)</strong> Sea <span class="math notranslate nohighlight">\(\varphi(x)=e^{-x/D}\)</span> en <span class="math notranslate nohighlight">\([0,\infty)\)</span>. Como <span class="math notranslate nohighlight">\(|\varphi'(x)|=e^{-x/D}/D\le 1/D\)</span>, por el teorema del valor medio <span class="math notranslate nohighlight">\(|\varphi(x)-\varphi(y)|\le|x-y|/D\)</span>. Por la desigualdad triangular inversa, <span class="math notranslate nohighlight">\(|W(g,b)-W(g,b')| = \big|\lVert p(g)-p(b)\rVert-\lVert p(g)-p(b')\rVert\big| \le \lVert p(b)-p(b')\rVert\)</span>. Componiendo se obtiene la primera desigualdad. La segunda tiene dos partes:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(D(g)\ge\kappa c\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(p\)</span> actúa sobre cada par <span class="math notranslate nohighlight">\((x_1,x_2)\)</span> y <span class="math notranslate nohighlight">\((y_1,y_2)\)</span> con la matriz <span class="math notranslate nohighlight">\(\tfrac12\begin{psmallmatrix}1&amp;1\\-1&amp;1\end{psmallmatrix}=\tfrac1{\sqrt2}R_{45°}\)</span>, con <span class="math notranslate nohighlight">\(R_{45°}\)</span> ortogonal. Por tanto <span class="math notranslate nohighlight">\(\lVert p(b)-p(b')\rVert=\lVert b-b'\rVert/\sqrt2\)</span>, y por lo mismo <span class="math notranslate nohighlight">\(p\)</span> es biyectiva. ∎</p></li>
+</ul>
+<p><strong>(c)</strong> Si <span class="math notranslate nohighlight">\(b\neq g\)</span>, entonces <span class="math notranslate nohighlight">\(W&gt;0\)</span>, y <span class="math notranslate nohighlight">\(W\)</span> es diferenciable en <span class="math notranslate nohighlight">\(p(b)\)</span> con <span class="math notranslate nohighlight">\(\nabla W = (p(b)-p(g))/W\)</span>, de norma 1. Por la regla de la cadena, <span class="math notranslate nohighlight">\(\nabla s = -(s/D)\,\nabla W\)</span>, cuya norma es <span class="math notranslate nohighlight">\(s/D&gt;0\)</span>. ∎</p>
+<p><strong>(d)</strong> Por un lado <span class="math notranslate nohighlight">\(\ln s = -W/(\kappa(\sqrt A+c))\)</span>, y por otro <span class="math notranslate nohighlight">\(\ln s_0 = -W/(\kappa\sqrt A)\)</span>. Su cociente es <span class="math notranslate nohighlight">\(\sqrt A/(\sqrt A+c)=\rho\)</span>, así que <span class="math notranslate nohighlight">\(s=s_0^{\rho}\)</span>.</p>
+<p>Al escalar por <span class="math notranslate nohighlight">\(\lambda\)</span>, <span class="math notranslate nohighlight">\(W(\lambda g,\lambda b)=\lambda W(g,b)\)</span> y <span class="math notranslate nohighlight">\(\sqrt{A_{\lambda g}}=\lambda\sqrt{A_g}\)</span>, de modo que
+$<span class="math notranslate nohighlight">\(s_c(\lambda g,\lambda b)=\exp\!\big(-\lambda W/(\kappa(\lambda\sqrt A+c))\big)=\exp\!\big(-W/(\kappa(\sqrt A+c/\lambda))\big)=s_{c/\lambda}(g,b).\)</span>$</p>
+<p>Los límites se siguen de <span class="math notranslate nohighlight">\(\rho\to1\)</span> (cuando <span class="math notranslate nohighlight">\(A\to\infty\)</span>) y de <span class="math notranslate nohighlight">\(\kappa(\sqrt A+c)\to\kappa c\)</span> (cuando <span class="math notranslate nohighlight">\(A\to0\)</span>). ∎</p>
+<p><strong>Proposición 2.</strong> La intersección es <span class="math notranslate nohighlight">\((a-t)a\)</span> y la unión <span class="math notranslate nohighlight">\(2a^2-(a-t)a=a(a+t)\)</span>; derivar en <span class="math notranslate nohighlight">\(t=0\)</span> da <span class="math notranslate nohighlight">\(-2/a\)</span>. Si <span class="math notranslate nohighlight">\(b\cap g=\varnothing\)</span>, una perturbación pequeña de <span class="math notranslate nohighlight">\(b\)</span> la mantiene disjunta, así que el IoU es constante igual a 0 en un entorno y su gradiente es nulo. ∎</p>
+<p><strong>Corolario 3.</strong> Por (b), <span class="math notranslate nohighlight">\(s(g,b')\ge s(g,b)-\lVert b-b'\rVert/(\sqrt2\kappa c) &gt; \tau+m-m=\tau\)</span>. ∎</p>
+</section>
+<section id="verificacion-numerica">
+<h3>Verificación numérica<a class="headerlink" href="#verificacion-numerica" title="Link to this heading">#</a></h3>
+<p>En <code class="docutils literal notranslate"><span class="pre">tests/test_original_model.py</span></code>, ejecutado en integración continua:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Propiedad</p></th>
+<th class="head"><p>Prueba</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>(a) rango e identidad</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_rango_e_identidad</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(W\)</span> euclídea en <span class="math notranslate nohighlight">\(p\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_w2_es_euclidea_en_p</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>(b) cociente máximo empírico frente a la cota, 4 combinaciones de <span class="math notranslate nohighlight">\((\kappa,c)\)</span> y 200 pares cada una</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_cota_lipschitz_esquinas</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>(c) gradiente no nulo donde el IoU es 0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_gradiente_no_nulo_con_cajas_disjuntas</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>(d) identidad de escala</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_invarianza_escala_sin_piso_y_limite_nwd</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Calibración con el IoU</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_calibracion_con_iou_en_objetos_grandes</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Proposición 2 en un tornillo de 8 px</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_mas_tolerante_que_iou_en_tornillos_diminutos</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Pendiente: la figura de sensibilidad (máximo cociente empírico de SGW y del IoU frente al tamaño del objeto, de 3 a 60 px), en <code class="docutils literal notranslate"><span class="pre">experiments/verificacion_teorema.py</span></code>.</p>
+</section>
+<section id="honestidad-teorica">
+<h3>Honestidad teórica<a class="headerlink" href="#honestidad-teorica" title="Link to this heading">#</a></h3>
+<p>El teorema habla de la <strong>estabilidad de la asignación de etiquetas</strong>, no del F1. Que una asignación más estable y con más positivos para los tornillos diminutos mejore el recall es la <strong>hipótesis</strong> que se pone a prueba, no algo demostrado.</p>
+<p>Tres supuestos se violan o se debilitan en los datos reales:</p>
+<ul class="simple">
+<li><p>La caja es un modelo pobre de un tornillo visto en ángulo, que es elíptico.</p></li>
+<li><p>La asignación de baja calidad de RPN (paso 6 del pseudocódigo) da al menos un ancla a cada verdad tanto con IoU como con SGW, así que el efecto en RPN puede ser menor que en la cabeza RoI, que no tiene ese paso.</p></li>
+<li><p>Más positivos también significa positivos de peor calidad. Esto podría empeorar la precisión, y se mide.</p></li>
+</ul>
+</section>
+</section>
+<section id="hipotesis-del-mecanismo-y-predicciones-secundarias-d3-d4">
+<h2>4. Hipótesis del mecanismo y predicciones secundarias (D3, D4)<a class="headerlink" href="#hipotesis-del-mecanismo-y-predicciones-secundarias-d3-d4" title="Link to this heading">#</a></h2>
+<p><strong>H-M.</strong> La asignación SGW corrige la ceguera ante tornillos pequeños (L) porque da a cada tornillo diminuto un número de positivos comparable al de los grandes y estable ante errores de 1–3 px (P, teorema 1 y proposición 2). Por tanto aumenta el recall del tercil pequeño y el F1 de instancia por grupo en test.</p>
+<p>Predicciones declaradas antes de entrenar:</p>
+<ol class="arabic simple">
+<li><p><strong>Piloto, sin entrenar:</strong> con IoU, el número de anclas y propuestas positivas por tornillo crece con el tamaño; con SGW la diferencia entre terciles se reduce. Si no se reduce, H-M es falsa desde el principio.</p></li>
+<li><p>La ganancia en recall se concentra en el tercil pequeño. En el grande, la diferencia con Mask R-CNN debe ser menor que la del pequeño.</p></li>
+<li><p>Ablación: quitar SGW de la cabeza RoI reduce la ganancia más que quitarlo de RPN, por la asignación de baja calidad de RPN (sección 3).</p></li>
+<li><p>Robustez: al reducir la imagen al 75 % y al 50 % (tornillos más pequeños), la ventaja frente a Mask R-CNN crece.</p></li>
+<li><p>Con <span class="math notranslate nohighlight">\(c\to0\)</span> (sin piso), la ganancia en el tercil pequeño desaparece o se vuelve inestable entre semillas.</p></li>
+</ol>
+</section>
+<section id="criterio-de-exito-y-de-fracaso-d5-y-hallazgo-alternativo-e3-14-5-9">
+<h2>5. Criterio de éxito y de fracaso (D5) y hallazgo alternativo (E3 §14.5.9)<a class="headerlink" href="#criterio-de-exito-y-de-fracaso-d5-y-hallazgo-alternativo-e3-14-5-9" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Éxito confirmatorio (R3):</strong> superar a cada rival de la familia, con Holm, tres pruebas y diferencia mayor que δ.</p></li>
+<li><p><strong>Realidad:</strong> δ = 0,20 se hereda del E1. Mask R-CNN tiene 0,726 de F1 por grupo, así que superarlo por δ exige llegar a 0,93, lo que no es plausible. Se declara desde ahora que el tope esperado es 4,0.</p></li>
+<li><p><strong>Hallazgo alternativo que sostiene el trabajo:</strong> la prueba confirmatoria de la hipótesis del mecanismo, con su propia familia:</p>
+<ul>
+<li><p>recall del tercil pequeño frente a Mask R-CNN, con un margen de 0,05 fijado aquí, antes de entrenar;</p></li>
+<li><p>las predicciones 2–5;</p></li>
+<li><p>el análisis de por qué la ceguera es compartida por la familia.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="piloto-de-asignacion-2026-11-23-particion-de-desarrollo-sin-entrenar">
+<h2>6. Piloto de asignación (2026-11-23, partición de desarrollo, sin entrenar)<a class="headerlink" href="#piloto-de-asignacion-2026-11-23-particion-de-desarrollo-sin-entrenar" title="Link to this heading">#</a></h2>
+<p>Script: <code class="docutils literal notranslate"><span class="pre">experiments/piloto_asignacion.py</span></code>. Datos: los 3.530 tornillos de train de la partición agrupada; no se usaron val ni test. Para cada tornillo se mide:</p>
+<ul class="simple">
+<li><p><strong>RPN:</strong> las anclas positivas, con umbral 0,7 y la asignación de baja calidad de torchvision;</p></li>
+<li><p><strong>RoI:</strong> la fracción de 200 propuestas sintéticas positivas (umbral 0,5), generadas con un error gaussiano de σ = 2 px en cada esquina.</p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Medida</p></th>
+<th class="head"><p>anclas positivas RPN (peq. / med. / gr.)</p></th>
+<th class="head"><p>propuestas positivas RoI (peq. / med. / gr.)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>IoU</p></td>
+<td><p>1,35 / 1,22 / 1,13</p></td>
+<td><p><strong>0,44 / 0,77 / 0,98</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>SGW κ = 0,225</p></td>
+<td><p>1,36 / 1,41 / 1,13</p></td>
+<td><p>0,23 / 0,44 / 0,85</p></td>
+</tr>
+<tr class="row-even"><td><p>SGW κ = 0,45</p></td>
+<td><p>1,50 / 1,45 / 1,18</p></td>
+<td><p><strong>0,85 / 0,98 / 1,00</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>SGW κ = 0,9</p></td>
+<td><p>6,09 / 10,36 / 7,26</p></td>
+<td><p>1,00 / 1,00 / 1,00</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Lectura:</strong></p>
+<ul class="simple">
+<li><p>La predicción 1 <strong>se cumple en la cabeza RoI y no en RPN</strong>. Con IoU, un tornillo pequeño pierde más de la mitad de sus propuestas positivas por un error de 2 px. Con κ₀ la brecha entre terciles baja de 0,54 a 0,15.</p></li>
+<li><p>En RPN casi todos los tornillos, de cualquier tamaño, quedan con una sola ancla positiva con ambas medidas. Es la asignación de baja calidad, como anticipaba la sección 3, y refuerza la predicción 3.</p></li>
+<li><p>κ = 0,225 es más estricta que el IoU y κ = 0,9 satura: todo es positivo, también lo que es de mala calidad.</p></li>
+<li><p>La rejilla se mantiene como se declaró. No se cambia por este resultado: el piloto no mide F1.</p></li>
+<li><p><strong>Limitación del piloto:</strong> σ = 2 px es un supuesto sobre el error de RPN, no una medida.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="04_literatura_novedad.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">Revisión de literatura y novedad</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="06_implementacion.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">Modelo original: implementación</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitacion-que-se-ataca-d1">1. Limitación que se ataca (D1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mecanismo">2. Mecanismo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuente-y-por-que-se-transfiere-d2">2.1 Fuente y por qué se transfiere (D2)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modificacion-algoritmica-lo-propio">2.2 Modificación algorítmica (lo propio)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pseudocodigo">2.3 Pseudocódigo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#teoria">3. Teoría</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demostraciones">Demostraciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verificacion-numerica">Verificación numérica</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#honestidad-teorica">Honestidad teórica</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hipotesis-del-mecanismo-y-predicciones-secundarias-d3-d4">4. Hipótesis del mecanismo y predicciones secundarias (D3, D4)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#criterio-de-exito-y-de-fracaso-d5-y-hallazgo-alternativo-e3-14-5-9">5. Criterio de éxito y de fracaso (D5) y hallazgo alternativo (E3 §14.5.9)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#piloto-de-asignacion-2026-11-23-particion-de-desarrollo-sin-entrenar">6. Piloto de asignación (2026-11-23, partición de desarrollo, sin entrenar)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Ivan Berrio, Jose David Castillo y Jaime Besada
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,996 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Protocolo y validación estadística &#8212; Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '07_protocolo_validacion';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Evaluación ampliada y robustez" href="08_evaluacion_ampliada.html" />
+    <link rel="prev" title="Modelo original: implementación" href="06_implementacion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="00_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_introduccion.html">
+                    Introducción
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_trazabilidad.html">Trazabilidad de correcciones del Entregable 2 (Bloque A)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">Datos: EDA y auditoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_benchmark.html">Modelos benchmark, selección y exportación (Bloque B)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_literatura_novedad.html">Revisión de literatura y novedad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_modelo_diseno.html">Modelo original: diseño, hipótesis y teoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_implementacion.html">Modelo original: implementación</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Protocolo y validación estadística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_evaluacion_ampliada.html">Evaluación ampliada y robustez</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_dashboard.html">Dashboard y despliegue (Bloques E y F)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">Conclusiones y limitaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_reproducibilidad.html">Reproducibilidad y bibliografía</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/BESADAJ/wdsd-segmentacion-tornillos-entregable-3" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Repositorio de origen"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/07_protocolo_validacion.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Protocolo y validación estadística</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estandar-equidad-y-familia-de-contrastes">1. Estándar, equidad y familia de contrastes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultado-principal-r3">2. Resultado principal (R3)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hipotesis-del-mecanismo-h-m-y-predicciones-secundarias">3. Hipótesis del mecanismo (H-M) y predicciones secundarias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ablacion">4. Ablación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supuestos-potencia-y-sobreajuste">5. Supuestos, potencia y sobreajuste</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-concluye">6. Qué se concluye</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="protocolo-y-validacion-estadistica">
+<h1>Protocolo y validación estadística<a class="headerlink" href="#protocolo-y-validacion-estadistica" title="Link to this heading">#</a></h1>
+<p>Este capítulo aplica el protocolo preregistrado (<code class="docutils literal notranslate"><span class="pre">experiments/protocolo.md</span></code>, tag <code class="docutils literal notranslate"><span class="pre">e3-protocolo</span></code> del 2026-11-23) a las 50 corridas finales de SGW: semillas 42–51 × 5 variantes, todas en la misma RTX 3050, sin fallos técnicos ni exclusiones. Todas las cifras salen de <code class="docutils literal notranslate"><span class="pre">experiments/analisis_confirmatorio.py</span></code>, que escribe <code class="docutils literal notranslate"><span class="pre">results/confirmatorio/</span></code>. El F1 recalculado desde las predicciones coincide con el de cada <code class="docutils literal notranslate"><span class="pre">resumen.json</span></code> (diferencia máxima 2 × 10⁻¹⁶).</p>
+<section id="estandar-equidad-y-familia-de-contrastes">
+<h2>1. Estándar, equidad y familia de contrastes<a class="headerlink" href="#estandar-equidad-y-familia-de-contrastes" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Unidad de independencia:</strong> el grupo de escena (14 en test). El F1 de cada grupo es la media de sus imágenes, promediada sobre las semillas del modelo.</p></li>
+<li><p><strong>Equidad del presupuesto:</strong></p>
+<ul>
+<li><p>SGW tiene el mismo presupuesto que Mask R-CNN en el E2 (6 épocas, lote 2, tasa 0,01, coseno, AMP, volteo, pesos de COCO).</p></li>
+<li><p>Su único hiperparámetro propio, κ, se buscó con 3 valores y 2 épocas, igual que la tasa de los rivales del E2.</p></li>
+<li><p>El control Mask R-CNN se volvió a entrenar con las mismas 10 semillas y en la misma GPU.</p></li>
+<li><p>Frente al Mask R-CNN del E2 (3060) no hay diferencia de hardware: +0,004, p = 0,42 en las semillas 42–46.</p></li>
+</ul>
+</li>
+<li><p><strong>Esfuerzo de diseño declarado:</strong> N_d = 2 variantes (bitácora de diseño), una de ellas descartada sin usar datos reales. Los rivales del E2 no tuvieron diseño propio: es la asimetría que pide declarar el enunciado.</p></li>
+<li><p><strong>Familia R3:</strong> SGW frente a 14 rivales, que son el Top 10 del E2, Mask R-CNN, YOLOv8, SOLOv2 y el clásico.</p></li>
+<li><p><strong>Tres pruebas por contraste</strong>, unilaterales (SGW &gt; rival):</p>
+<ul>
+<li><p>Wilcoxon pareado por grupo;</p></li>
+<li><p><em>bootstrap</em> pareado por grupo (10 000 remuestreos, IC 95 % percentil);</p></li>
+<li><p>t pareado sobre las 10 semillas, solo frente a Mask R-CNN, que es el único rival con semillas pareadas.</p></li>
+</ul>
+</li>
+<li><p><strong>Corrección y decisión:</strong> Holm sobre los 14 contrastes en cada prueba. Decide el máximo de los p ajustados.</p></li>
+<li><p><strong>Relevancia:</strong> diferencia ≥ δ = 0,20, con el IC inferior &gt; 0.</p></li>
+</ul>
+</section>
+<section id="resultado-principal-r3">
+<h2>2. Resultado principal (R3)<a class="headerlink" href="#resultado-principal-r3" title="Link to this heading">#</a></h2>
+<p><strong>Tabla 7.1.</strong> F1 de instancia por grupo en test. Media ± desviación entre semillas.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>F1 por grupo</p></th>
+<th class="head"><p>DE</p></th>
+<th class="head"><p>Semillas</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>SGW (κ = 0,45, c = 4)</strong></p></td>
+<td><p><strong>0,738</strong></p></td>
+<td><p>0,014</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mask R-CNN (control, 3050)</p></td>
+<td><p>0,723</p></td>
+<td><p>0,018</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Mask R-CNN (E2, 3060)</p></td>
+<td><p>0,726</p></td>
+<td><p>0,012</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>HTC</p></td>
+<td><p>0,724</p></td>
+<td><p>0,017</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Cascade Mask R-CNN</p></td>
+<td><p>0,723</p></td>
+<td><p>0,006</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>MS R-CNN</p></td>
+<td><p>0,716</p></td>
+<td><p>0,010</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>PointRend</p></td>
+<td><p>0,701</p></td>
+<td><p>0,019</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLOv7</p></td>
+<td><p>0,638</p></td>
+<td><p>0,030</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>CondInst</p></td>
+<td><p>0,607</p></td>
+<td><p>0,009</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLO26</p></td>
+<td><p>0,569</p></td>
+<td><p>0,020</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>YOLOv8</p></td>
+<td><p>0,566</p></td>
+<td><p>0,032</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mask2Former</p></td>
+<td><p>0,545</p></td>
+<td><p>0,143</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>YOLO11</p></td>
+<td><p>0,530</p></td>
+<td><p>0,047</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLOv9</p></td>
+<td><p>0,405</p></td>
+<td><p>0,038</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>SOLOv2</p></td>
+<td><p>0,231</p></td>
+<td><p>0,021</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Clásico</p></td>
+<td><p>0,018</p></td>
+<td><p>0,004</p></td>
+<td><p>5</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Tabla 7.2.</strong> Familia R3: diferencia SGW − rival en F1 por grupo, con 14 grupos.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Rival</p></th>
+<th class="head"><p>Diferencia</p></th>
+<th class="head"><p>IC 95 %</p></th>
+<th class="head"><p>Grupos a favor</p></th>
+<th class="head"><p>p Holm Wilcoxon</p></th>
+<th class="head"><p>p Holm bootstrap</p></th>
+<th class="head"><p>p t (semillas)</p></th>
+<th class="head"><p>δ de Cliff</p></th>
+<th class="head"><p>d pareado</p></th>
+<th class="head"><p>Decisión</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mask R-CNN</p></td>
+<td><p>+0,015</p></td>
+<td><p>[−0,003; 0,035]</p></td>
+<td><p>9</p></td>
+<td><p>0,291</p></td>
+<td><p>0,190</p></td>
+<td><p>0,059</p></td>
+<td><p>0,09</p></td>
+<td><p>0,42</p></td>
+<td><p>equivalente dentro de δ</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cascade</p></td>
+<td><p>+0,015</p></td>
+<td><p>[−0,027; 0,053]</p></td>
+<td><p>9</p></td>
+<td><p>0,291</p></td>
+<td><p>0,382</p></td>
+<td><p>—</p></td>
+<td><p>0,08</p></td>
+<td><p>0,19</p></td>
+<td><p>equivalente dentro de δ</p></td>
+</tr>
+<tr class="row-even"><td><p>HTC</p></td>
+<td><p>+0,014</p></td>
+<td><p>[−0,021; 0,045]</p></td>
+<td><p>7</p></td>
+<td><p>0,291</p></td>
+<td><p>0,382</p></td>
+<td><p>—</p></td>
+<td><p>0,08</p></td>
+<td><p>0,22</p></td>
+<td><p>equivalente dentro de δ</p></td>
+</tr>
+<tr class="row-odd"><td><p>MS R-CNN</p></td>
+<td><p>+0,022</p></td>
+<td><p>[−0,006; 0,048]</p></td>
+<td><p>10</p></td>
+<td><p>0,266</p></td>
+<td><p>0,191</p></td>
+<td><p>—</p></td>
+<td><p>0,12</p></td>
+<td><p>0,41</p></td>
+<td><p>equivalente dentro de δ</p></td>
+</tr>
+<tr class="row-even"><td><p>PointRend</p></td>
+<td><p>+0,037</p></td>
+<td><p>[0,013; 0,070]</p></td>
+<td><p>9</p></td>
+<td><p>0,033</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,12</p></td>
+<td><p>0,65</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLOv7</p></td>
+<td><p>+0,100</p></td>
+<td><p>[0,049; 0,148]</p></td>
+<td><p>13</p></td>
+<td><p>0,016</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,36</p></td>
+<td><p>1,03</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-even"><td><p>CondInst</p></td>
+<td><p>+0,131</p></td>
+<td><p>[0,076; 0,192]</p></td>
+<td><p>13</p></td>
+<td><p>0,007</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,31</p></td>
+<td><p>1,13</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLO26</p></td>
+<td><p>+0,169</p></td>
+<td><p>[0,110; 0,233]</p></td>
+<td><p>13</p></td>
+<td><p>0,007</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,36</p></td>
+<td><p>1,37</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-even"><td><p>YOLOv8</p></td>
+<td><p>+0,172</p></td>
+<td><p>[0,124; 0,221]</p></td>
+<td><p>13</p></td>
+<td><p>0,007</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,34</p></td>
+<td><p>1,79</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mask2Former</p></td>
+<td><p>+0,193</p></td>
+<td><p>[0,120; 0,264]</p></td>
+<td><p>13</p></td>
+<td><p>0,002</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,42</p></td>
+<td><p>1,37</p></td>
+<td><p>superior, &lt; δ</p></td>
+</tr>
+<tr class="row-even"><td><p>YOLO11</p></td>
+<td><p>+0,208</p></td>
+<td><p>[0,151; 0,268]</p></td>
+<td><p>14</p></td>
+<td><p>0,001</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,47</p></td>
+<td><p>1,78</p></td>
+<td><p><strong>cumple R3</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>YOLOv9</p></td>
+<td><p>+0,333</p></td>
+<td><p>[0,255; 0,414]</p></td>
+<td><p>14</p></td>
+<td><p>0,001</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,63</p></td>
+<td><p>2,11</p></td>
+<td><p><strong>cumple R3</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>SOLOv2</p></td>
+<td><p>+0,507</p></td>
+<td><p>[0,321; 0,689]</p></td>
+<td><p>14</p></td>
+<td><p>0,001</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,79</p></td>
+<td><p>1,39</p></td>
+<td><p><strong>cumple R3</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Clásico</p></td>
+<td><p>+0,720</p></td>
+<td><p>[0,565; 0,849]</p></td>
+<td><p>14</p></td>
+<td><p>0,001</p></td>
+<td><p>0,001</p></td>
+<td><p>—</p></td>
+<td><p>0,97</p></td>
+<td><p>2,55</p></td>
+<td><p><strong>cumple R3</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Veredicto R3: no se cumple.</strong> SGW es significativamente mejor que 10 de los 14 rivales. Supera por más de δ solo a 4: YOLO11, YOLOv9, SOLOv2 y el clásico. Frente a los cuatro modelos de dos etapas más fuertes (Mask R-CNN, Cascade, HTC y MS R-CNN), la diferencia es pequeña y no significativa: el IC queda dentro de ±δ. Es lo que el protocolo había anticipado: superar a Mask R-CNN por δ exigía un F1 de 0,93.</p>
+<p><strong>Friedman, Iman-Davenport y Nemenyi</strong> sobre los 15 modelos y los 14 grupos:</p>
+<ul class="simple">
+<li><p>χ² = 146,9 (p = 3 × 10⁻²⁴); F de Iman-Davenport = 38,8 (p = 4 × 10⁻⁴⁷).</p></li>
+<li><p><strong>SGW tiene el mejor rango medio (2,96).</strong> La diferencia crítica de Nemenyi es CD = 5,73 (q = 3,39).</p></li>
+<li><p>Por Nemenyi, SGW no se distingue de Mask R-CNN, HTC, MS R-CNN, Cascade, PointRend, YOLOv7 y CondInst.</p></li>
+<li><p>Diagrama: <code class="docutils literal notranslate"><span class="pre">results/confirmatorio/diferencia_critica.png</span></code>.</p></li>
+</ul>
+</section>
+<section id="hipotesis-del-mecanismo-h-m-y-predicciones-secundarias">
+<h2>3. Hipótesis del mecanismo (H-M) y predicciones secundarias<a class="headerlink" href="#hipotesis-del-mecanismo-h-m-y-predicciones-secundarias" title="Link to this heading">#</a></h2>
+<p><strong>H-M:</strong> el recall del tercil pequeño (área &lt; 75 px, cortes del E2) de SGW supera al de Mask R-CNN por más de 0,05.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cálculo</p></th>
+<th class="head"><p>Diferencia</p></th>
+<th class="head"><p>IC 95 %</p></th>
+<th class="head"><p>Resultado</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Por grupo</strong>, la unidad preregistrada (12 grupos con tornillos pequeños)</p></td>
+<td><p>+0,012</p></td>
+<td><p>[−0,040; 0,062]</p></td>
+<td><p>p Wilcoxon 0,93; p <em>bootstrap</em> 0,94: <strong>no se confirma</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Todos los tornillos juntos, por semilla (exploratorio)</p></td>
+<td><p>+0,083</p></td>
+<td><p>—</p></td>
+<td><p>9 de 10 semillas a favor; p de t contra 0,05 = 0,0004</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>H-M no se confirma con el análisis preregistrado.</strong> La discrepancia entre las dos filas tiene una causa concreta. La ganancia de recall pequeño viene casi entera del grupo 6:</p>
+<ul class="simple">
+<li><p>tiene 59 de los 155 tornillos pequeños de test;</p></li>
+<li><p>en él, SGW sube el recall de 0,22 a 0,41;</p></li>
+<li><p>aporta 11 de los 13 aciertos extra por semilla.</p></li>
+</ul>
+<p>Los demás grupos tienen entre 1 y 8 tornillos pequeños, con un recall que casi no cambia (o que ya era alto). Promediar por grupo da a cada grupo el mismo peso, y así diluye la ganancia. El efecto existe y es estable entre semillas, pero depende de una escena. No se puede afirmar que se generalice a todas.</p>
+<p><strong>Predicciones secundarias:</strong> Holm entre las tres; por grupo, ninguna se confirma.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Predicción</p></th>
+<th class="head"><p>Por grupo</p></th>
+<th class="head"><p>Todos los tornillos, por semilla (exploratorio)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P2: la ganancia se concentra en el tercil pequeño</p></td>
+<td><p>+0,000 [−0,120; 0,094]</p></td>
+<td><p>+0,102; 10/10 semillas</p></td>
+</tr>
+<tr class="row-odd"><td><p>P3: quitar SGW de la cabeza RoI pesa más que quitarlo de RPN</p></td>
+<td><p>−0,021 [−0,085; 0,027]</p></td>
+<td><p>+0,055; 9/10</p></td>
+</tr>
+<tr class="row-even"><td><p>P5: sin piso (c → 0) se pierde la ganancia</p></td>
+<td><p>−0,008 [−0,073; 0,043]</p></td>
+<td><p>+0,073; 9/10</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>P1 ya se había verificado en el piloto (capítulo 5). P4 (escala) se evalúa en el capítulo 8.</p>
+<p><strong>Recall por tercil</strong> (todos los tornillos juntos; media ± DE sobre 10 semillas):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>Pequeño</p></th>
+<th class="head"><p>Mediano</p></th>
+<th class="head"><p>Grande</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mask R-CNN</p></td>
+<td><p>0,302 ± 0,035</p></td>
+<td><p>0,662 ± 0,029</p></td>
+<td><p>0,776 ± 0,026</p></td>
+</tr>
+<tr class="row-odd"><td><p>SGW</p></td>
+<td><p>0,385 ± 0,033</p></td>
+<td><p>0,656 ± 0,020</p></td>
+<td><p>0,757 ± 0,025</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>SGW cambia recall entre tamaños: gana en los tornillos pequeños y cede un poco en los grandes (−0,019).</p>
+</section>
+<section id="ablacion">
+<h2>4. Ablación<a class="headerlink" href="#ablacion" title="Link to this heading">#</a></h2>
+<p>Familia propia: cada variante frente a SGW completo, bilateral, con Holm sobre 3 contrastes.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variante</p></th>
+<th class="head"><p>Δ F1 por grupo</p></th>
+<th class="head"><p>IC 95 %</p></th>
+<th class="head"><p>p de decisión</p></th>
+<th class="head"><p>Recall pequeño</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sgw_rpn (SGW solo en RPN)</p></td>
+<td><p>−0,013</p></td>
+<td><p>[−0,030; 0,004]</p></td>
+<td><p>0,30</p></td>
+<td><p>0,328</p></td>
+</tr>
+<tr class="row-odd"><td><p>sgw_roi (SGW solo en RoI)</p></td>
+<td><p>−0,009</p></td>
+<td><p>[−0,021; 0,002]</p></td>
+<td><p>0,22</p></td>
+<td><p>0,383</p></td>
+</tr>
+<tr class="row-even"><td><p>sgw_c0 (sin piso)</p></td>
+<td><p>−0,015</p></td>
+<td><p>[−0,032; 0,001]</p></td>
+<td><p>0,30</p></td>
+<td><p>0,312</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Las tres variantes quedan por debajo de SGW completo, pero ninguna diferencia es significativa. Mirando todos los tornillos juntos, el patrón es coherente con el diseño:</p>
+<ul class="simple">
+<li><p>la cabeza RoI aporta casi toda la ganancia de recall pequeño (0,383 frente a 0,385 del modelo completo);</p></li>
+<li><p>quitar el piso la reduce (0,312), cerca del control (0,302).</p></li>
+</ul>
+</section>
+<section id="supuestos-potencia-y-sobreajuste">
+<h2>5. Supuestos, potencia y sobreajuste<a class="headerlink" href="#supuestos-potencia-y-sobreajuste" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Supuestos:</strong></p>
+<ul>
+<li><p>Las diferencias SGW − Mask R-CNN por grupo son compatibles con normalidad (Shapiro p = 0,59; asimetría 0,50).</p></li>
+<li><p>Las diferencias por semilla no lo son (Shapiro p = 0,008), así que el t sobre semillas es solo orientativo.</p></li>
+<li><p>La decisión usa el máximo de los tres p, que ya es conservador.</p></li>
+<li><p>Las varianzas entre semillas son homogéneas (Levene p = 0,39).</p></li>
+</ul>
+</li>
+<li><p><strong>Potencia (exploratorio):</strong> el análisis de potencia no se registró antes de las corridas y se declara así.</p>
+<ul>
+<li><p>Con la DE de las diferencias por grupo (0,037) y 14 grupos, la diferencia mínima detectable con potencia 0,90 es 0,031 a α = 0,05 y 0,044 a α/14 (peor caso de Holm).</p></li>
+<li><p>Para δ = 0,20 la potencia es prácticamente 1.</p></li>
+<li><p>Es decir: el estudio tiene potencia para detectar una diferencia de 0,04 frente a Mask R-CNN. La diferencia observada (0,015) es menor que eso.</p></li>
+</ul>
+</li>
+<li><p><strong>Sobreajuste</strong> (<code class="docutils literal notranslate"><span class="pre">sobreajuste_por_corrida.csv</span></code>):</p>
+<ul>
+<li><p>La brecha entre train93 y val es mayor en SGW: 0,098 frente a 0,059 (t pareado p = 0,006). SGW ajusta más el entrenamiento, coherente con que asigna más propuestas positivas.</p></li>
+<li><p>La brecha entre val y test es la misma: 0,070 frente a 0,071 (p = 0,92). El ajuste extra no se traduce en peor generalización relativa.</p></li>
+<li><p>En 4 de las 10 corridas de SGW y en 3 de las 10 de Mask R-CNN, el AP de val sigue subiendo en la última época: los dos están algo subentrenados, igual que en el E2.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="que-se-concluye">
+<h2>6. Qué se concluye<a class="headerlink" href="#que-se-concluye" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>SGW es el mejor modelo del benchmark en rango medio y en F1 medio,</strong> pero su ventaja sobre los modelos de dos etapas (+0,015 frente a Mask R-CNN) no es significativa y está muy por debajo de δ. R3 no se cumple, como se había anticipado.</p></li>
+<li><p><strong>El mecanismo hace lo que la teoría predice cuando hay muchos tornillos diminutos:</strong> más recall en el tercil pequeño en 9 de 10 semillas. Pero esa ganancia se concentra en una escena, y la prueba preregistrada por grupo no la confirma.</p></li>
+<li><p><strong>Los resultados negativos se reportan tal cual:</strong> H-M por grupo y las predicciones 2, 3 y 5 por grupo. No se cambió la unidad de análisis después de ver los datos. La versión agregada por tornillo se presenta solo como exploratoria.</p></li>
+</ol>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06_implementacion.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">Modelo original: implementación</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08_evaluacion_ampliada.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">Evaluación ampliada y robustez</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estandar-equidad-y-familia-de-contrastes">1. Estándar, equidad y familia de contrastes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultado-principal-r3">2. Resultado principal (R3)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hipotesis-del-mecanismo-h-m-y-predicciones-secundarias">3. Hipótesis del mecanismo (H-M) y predicciones secundarias</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ablacion">4. Ablación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supuestos-potencia-y-sobreajuste">5. Supuestos, potencia y sobreajuste</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-concluye">6. Qué se concluye</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Ivan Berrio, Jose David Castillo y Jaime Besada
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

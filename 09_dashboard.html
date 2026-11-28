@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dashboard y despliegue (Bloques E y F) &#8212; Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '09_dashboard';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Conclusiones y limitaciones" href="10_conclusiones.html" />
+    <link rel="prev" title="Evaluación ampliada y robustez" href="08_evaluacion_ampliada.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="00_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_introduccion.html">
+                    Introducción
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_trazabilidad.html">Trazabilidad de correcciones del Entregable 2 (Bloque A)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">Datos: EDA y auditoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_benchmark.html">Modelos benchmark, selección y exportación (Bloque B)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_literatura_novedad.html">Revisión de literatura y novedad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_modelo_diseno.html">Modelo original: diseño, hipótesis y teoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_implementacion.html">Modelo original: implementación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_protocolo_validacion.html">Protocolo y validación estadística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_evaluacion_ampliada.html">Evaluación ampliada y robustez</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Dashboard y despliegue (Bloques E y F)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">Conclusiones y limitaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_reproducibilidad.html">Reproducibilidad y bibliografía</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/BESADAJ/wdsd-segmentacion-tornillos-entregable-3" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Repositorio de origen"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/09_dashboard.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dashboard y despliegue (Bloques E y F)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arquitectura">Arquitectura</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decisiones-de-diseno">Decisiones de diseño</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#despliegue-en-render">Despliegue en Render</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memoria-e-inferencia-en-vivo">Memoria e inferencia en vivo</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="dashboard-y-despliegue-bloques-e-y-f">
+<h1>Dashboard y despliegue (Bloques E y F)<a class="headerlink" href="#dashboard-y-despliegue-bloques-e-y-f" title="Link to this heading">#</a></h1>
+<section id="arquitectura">
+<h2>Arquitectura<a class="headerlink" href="#arquitectura" title="Link to this heading">#</a></h2>
+<p>La app es multipágina, hecha con Dash, <code class="docutils literal notranslate"><span class="pre">use_pages=True</span></code> y dash-bootstrap-components con el tema FLATLY.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>app.py            crea la app, la barra fija, el pie con la política de privacidad y expone server
+pages/            contexto.py · eda.py · modelos.py · original.py · ficha.py (un archivo y sus callbacks por página)
+src/data.py       carga y caché de data/ y results/ (la tabla maestra es la misma que usa el libro)
+src/plots.py      figuras reutilizables con una plantilla y una paleta de 5 colores
+src/inference.py  ONNX Runtime en CPU, validación de entradas, aviso fuera de dominio e intervalo conforme
+src/explain.py    explicación local: máscaras y mapa de confianza por píxel
+artifacts/        modelos ONNX (pesos en FP16) y metadata.json
+data/             datos livianos precalculados (experiments/datos_dashboard.py)
+</pre></div>
+</div>
+<p>La app nunca importa <code class="docutils literal notranslate"><span class="pre">training/</span></code> ni torch: en despliegue solo usa numpy, Pillow, pandas, plotly y onnxruntime.</p>
+</section>
+<section id="decisiones-de-diseno">
+<h2>Decisiones de diseño<a class="headerlink" href="#decisiones-de-diseno" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Inferencia en vivo:</strong> para SGW y Mask R-CNN, los dos modelos exportados a ONNX. En el despliegue gratuito corre en el navegador de quien abre el dashboard (sección «Memoria e inferencia en vivo»); en local o con Docker, en el servidor, con un solo modelo en memoria a la vez.</p>
+<ul>
+<li><p>Los otros 12 modelos se muestran con resultados precalculados (capítulo 3 §4).</p></li>
+</ul>
+</li>
+<li><p><strong>Explicación local:</strong> en segmentación es la máscara misma. Se muestra cada instancia con su score y un mapa de confianza (probabilidad de máscara × score).</p>
+<ul>
+<li><p>Grad-CAM no es posible sobre el grafo ONNX sin gradientes. Por eso se muestran precalculados los mapas de oclusión del E2.</p></li>
+</ul>
+</li>
+<li><p><strong>Incertidumbre:</strong> intervalo conforme del 90 % para el número de tornillos (± 2, calibrado en val). Se muestra con su cobertura empírica en test (82 %): las escenas no son intercambiables.</p></li>
+<li><p><strong>Fuera de dominio:</strong> distancia de Mahalanobis de 8 rasgos simples (color medio, contraste, gradiente y aspecto) a los de train, con umbral en el percentil 99. También avisa si la imagen no es 16:9.</p></li>
+<li><p><strong>Robustez y seguridad:</strong></p>
+<ul>
+<li><p>límite de 8 MB y de 64 a 6000 px por imagen;</p></li>
+<li><p>validación del formato con <code class="docutils literal notranslate"><span class="pre">PIL.verify</span></code>;</p></li>
+<li><p>los errores se muestran con <code class="docutils literal notranslate"><span class="pre">dbc.Alert</span></code>;</p></li>
+<li><p>las imágenes subidas no se guardan ni se registran;</p></li>
+<li><p>no se exponen rutas ni credenciales.</p></li>
+</ul>
+</li>
+<li><p><strong>Identidad visual:</strong> tema FLATLY con cinco colores (tinta, naranja solo para SGW, azul para Mask R-CNN, verde para la anotación real y gris), una retícula de 1280 px para barra, contenido y pie, tarjetas con la interpretación junto a cada gráfico y una plantilla Plotly única con coma decimal y tamaños legibles en proyector (<code class="docutils literal notranslate"><span class="pre">assets/style.css</span></code>, <code class="docutils literal notranslate"><span class="pre">src/ui.py</span></code>, <code class="docutils literal notranslate"><span class="pre">src/plots.py</span></code>). Las particiones usan tonos de la tinta para no confundirse con los modelos.</p></li>
+<li><p><strong>Accesibilidad:</strong> el naranja de SGW y el azul de Mask R-CNN también se distinguen por la forma del marcador y por el trazo; las imágenes tienen texto alternativo.</p></li>
+<li><p><strong>Consistencia con el informe:</strong> <code class="docutils literal notranslate"><span class="pre">tests/test_dashboard.py</span></code> verifica que las cifras de la tabla maestra coinciden con <code class="docutils literal notranslate"><span class="pre">results/confirmatorio</span></code> y con el capítulo 7.</p></li>
+</ul>
+</section>
+<section id="despliegue-en-render">
+<h2>Despliegue en Render<a class="headerlink" href="#despliegue-en-render" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>El repositorio en GitHub contiene <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> y <code class="docutils literal notranslate"><span class="pre">artifacts/</span></code>.</p></li>
+<li><p>En Render: <em>New → Blueprint</em>, elegir el repositorio; <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code> crea el servicio web gratuito con <em>runtime</em> Docker y despliegue automático en cada <em>push</em> a <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>Prueba de humo: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">experiments/prueba_humo_despliegue.py</span> <span class="pre">https://&lt;servicio&gt;.onrender.com</span> <span class="pre">--salida</span> <span class="pre">results/despliegue/prueba_humo.md</span></code>.</p>
+<ul class="simple">
+<li><p>Carga las cinco páginas, dispara los callbacks, comprueba la entrada inválida, las cabeceras COOP/COEP, onnxruntime-web y los dos <code class="docutils literal notranslate"><span class="pre">.onnx</span></code>.</p></li>
+<li><p>La predicción en el navegador se comprueba a mano: <em>Modelos → Sube tu imagen</em>, con una imagen de test.</p></li>
+<li><p>En CI corren los mismos controles sobre la app (<code class="docutils literal notranslate"><span class="pre">tests/test_dashboard.py</span></code>).</p></li>
+<li><p>En local: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-t</span> <span class="pre">wdsd-sgw</span> <span class="pre">.</span> <span class="pre">&amp;&amp;</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-p</span> <span class="pre">8050:8050</span> <span class="pre">wdsd-sgw</span></code>.</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>URL pública:</strong> <a class="reference external" href="https://wdsd-segmentacion-tornillos-entregable-3.onrender.com">https://wdsd-segmentacion-tornillos-entregable-3.onrender.com</a> (plan gratuito; desplegado el 27-nov-2026, prueba de humo APROBADA en <code class="docutils literal notranslate"><span class="pre">results/despliegue/prueba_humo.md</span></code>).</p>
+<div class="warning admonition">
+<p class="admonition-title">Pendiente</p>
+<ul class="simple">
+<li><p>Capturas de pantalla de las cinco páginas, una vez desplegado.</p></li>
+</ul>
+</div>
+</section>
+<section id="memoria-e-inferencia-en-vivo">
+<h2>Memoria e inferencia en vivo<a class="headerlink" href="#memoria-e-inferencia-en-vivo" title="Link to this heading">#</a></h2>
+<p>Una predicción con el ONNX de SGW sobre una imagen de 1280×720 sube el proceso del servidor a unos 0,9 GB (894 MB de pico, medido con la prueba de humo):</p>
+<ul class="simple">
+<li><p>unos 176 MB son los pesos: se guardan en FP16 pero ONNX Runtime los convierte a FP32 al cargar (43,9 M parámetros × 4 bytes);</p></li>
+<li><p>el resto son activaciones: cada mapa del FPN a 1280×720 ocupa unos 60 MB, y las ~1000 propuestas del RPN pasan por el <em>RoI pooling</em>.</p></li>
+</ul>
+<p>Se probó a reducir la memoria sin cambiar el modelo:</p>
+<ul class="simple">
+<li><p>desactivar el <em>arena</em> y el patrón de memoria de ONNX Runtime;</p></li>
+<li><p>usar un hilo y optimización de grafo básica;</p></li>
+<li><p>liberar el modelo anterior antes de cargar otro (de 989 a 894 MB).</p></li>
+</ul>
+<p>Ninguna opción baja de unos 450 MB solo en ONNX Runtime, sin contar la app. Recortar las propuestas del RPN de 1000 a 150 bajaría el pico a 640 MB, pero cambia el modelo evaluado y aun así no cabe.</p>
+<p>El plan gratuito de Render tiene 512 MB. Por eso, en el despliegue (<code class="docutils literal notranslate"><span class="pre">WDSD_INFERENCIA_VIVO=0</span></code>), la predicción en vivo corre <strong>en el navegador</strong>:</p>
+<ul class="simple">
+<li><p>el servidor solo entrega el mismo archivo ONNX (<code class="docutils literal notranslate"><span class="pre">/modelo/&lt;nombre&gt;.onnx</span></code>, 84 MB, que queda en la caché del navegador) y onnxruntime-web 1.20.1 (WebAssembly) lo ejecuta en el equipo de quien abre la página (<code class="docutils literal notranslate"><span class="pre">assets/prediccion_navegador.js</span></code>);</p></li>
+<li><p>el servidor sigue validando la imagen, dando el aviso fuera de dominio y redimensionándola a 1280×720 con Pillow; el navegador recibe esa imagen en PNG (sin pérdida), así que el modelo ve los mismos píxeles en los dos modos;</p></li>
+<li><p>las cabeceras COOP/COEP habilitan 4 hilos de WebAssembly: una predicción tarda ~4,3 s (Chromium, 4 hilos) frente a ~14 s con uno;</p></li>
+<li><p>el navegador necesita ~1,3 GB de memoria libre, así que el modo está pensado para un computador, no para un teléfono.</p></li>
+</ul>
+<p>Equivalencia: con las imágenes 14 y 49 de la galería, el navegador y el servidor dan las mismas detecciones y los mismos scores con ambos modelos (imagen 14: SGW 8 tornillos, Mask R-CNN 9; imagen 49: 1 y 0). Una primera versión redimensionaba en el <em>canvas</em> del navegador y daba un tornillo de más con SGW en la imagen 14 (9 frente a 8): por eso el redimensionado quedó en Python.</p>
+<p>Memoria del servidor en modo navegador: 138 MB de pico durante la prueba de humo más dos predicciones (SGW y Mask R-CNN), muy por debajo de los 512 MB.</p>
+<p>Reducir la resolución no es alternativa: al 50 % el F1 cae a 0,14 (capítulo 8).</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="08_evaluacion_ampliada.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">Evaluación ampliada y robustez</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="10_conclusiones.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">Conclusiones y limitaciones</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arquitectura">Arquitectura</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decisiones-de-diseno">Decisiones de diseño</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#despliegue-en-render">Despliegue en Render</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memoria-e-inferencia-en-vivo">Memoria e inferencia en vivo</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Ivan Berrio, Jose David Castillo y Jaime Besada
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

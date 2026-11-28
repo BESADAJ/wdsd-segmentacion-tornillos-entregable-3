@@ -1,0 +1,778 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Evaluación ampliada y robustez &#8212; Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script src="_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '08_evaluacion_ampliada';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Dashboard y despliegue (Bloques E y F)" href="09_dashboard.html" />
+    <link rel="prev" title="Protocolo y validación estadística" href="07_protocolo_validacion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="00_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tornillos diminutos: asignación SGW para segmentación de instancias en WDSD</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_introduccion.html">
+                    Introducción
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_trazabilidad.html">Trazabilidad de correcciones del Entregable 2 (Bloque A)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">Datos: EDA y auditoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_benchmark.html">Modelos benchmark, selección y exportación (Bloque B)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_literatura_novedad.html">Revisión de literatura y novedad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_modelo_diseno.html">Modelo original: diseño, hipótesis y teoría</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_implementacion.html">Modelo original: implementación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_protocolo_validacion.html">Protocolo y validación estadística</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Evaluación ampliada y robustez</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_dashboard.html">Dashboard y despliegue (Bloques E y F)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">Conclusiones y limitaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_reproducibilidad.html">Reproducibilidad y bibliografía</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/BESADAJ/wdsd-segmentacion-tornillos-entregable-3" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Repositorio de origen"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/08_evaluacion_ampliada.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Evaluación ampliada y robustez</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#robustez-a-perturbaciones-y-a-la-escala-prediccion-4">1. Robustez a perturbaciones y a la escala (predicción 4)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tres-conjuntos-adicionales">2. Tres conjuntos adicionales</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calibracion-incertidumbre-eficiencia-y-errores">3. Calibración, incertidumbre, eficiencia y errores</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="evaluacion-ampliada-y-robustez">
+<h1>Evaluación ampliada y robustez<a class="headerlink" href="#evaluacion-ampliada-y-robustez" title="Link to this heading">#</a></h1>
+<section id="robustez-a-perturbaciones-y-a-la-escala-prediccion-4">
+<h2>1. Robustez a perturbaciones y a la escala (predicción 4)<a class="headerlink" href="#robustez-a-perturbaciones-y-a-la-escala-prediccion-4" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Qué se hizo:</strong> <code class="docutils literal notranslate"><span class="pre">experiments/robustez_e3.py</span></code> evalúa los 20 modelos finales de SGW y Mask R-CNN (10 semillas cada uno) sobre las 108 imágenes de test, con el umbral de val de cada corrida.</p></li>
+<li><p><strong>Perturbaciones:</strong> las mismas tres de ruido y tres de desenfoque del E2, con la misma semilla de ruido por imagen, más la escala.</p>
+<ul>
+<li><p>En escala, la red procesa la imagen al 75 % y al 50 %, cambiando también el tamaño interno de torchvision, y las máscaras se devuelven a la resolución original.</p></li>
+</ul>
+</li>
+<li><p><strong>Control:</strong> a escala 1,0 se reproduce exactamente la tabla confirmatoria (0,738 y 0,723).</p></li>
+</ul>
+<p><strong>Tabla 8.1.</strong> F1 por grupo en test bajo perturbación. Media de 10 semillas; d = SGW − Mask R-CNN.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Perturbación</p></th>
+<th class="head"><p>Nivel</p></th>
+<th class="head"><p>Mask R-CNN</p></th>
+<th class="head"><p>SGW</p></th>
+<th class="head"><p>d</p></th>
+<th class="head"><p>Semillas con SGW mejor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Escala</p></td>
+<td><p>1,00</p></td>
+<td><p>0,723</p></td>
+<td><p>0,738</p></td>
+<td><p>+0,016</p></td>
+<td><p>8/10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Escala</p></td>
+<td><p>0,75</p></td>
+<td><p>0,592</p></td>
+<td><p>0,623</p></td>
+<td><p>+0,031</p></td>
+<td><p>7/10</p></td>
+</tr>
+<tr class="row-even"><td><p>Escala</p></td>
+<td><p>0,50</p></td>
+<td><p>0,124</p></td>
+<td><p>0,144</p></td>
+<td><p>+0,019</p></td>
+<td><p>8/10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ruido</p></td>
+<td><p>σ = 0,02</p></td>
+<td><p>0,700</p></td>
+<td><p>0,712</p></td>
+<td><p>+0,012</p></td>
+<td><p>9/10</p></td>
+</tr>
+<tr class="row-even"><td><p>Ruido</p></td>
+<td><p>σ = 0,05</p></td>
+<td><p>0,621</p></td>
+<td><p>0,624</p></td>
+<td><p>+0,003</p></td>
+<td><p>5/10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ruido</p></td>
+<td><p>σ = 0,10</p></td>
+<td><p>0,482</p></td>
+<td><p>0,449</p></td>
+<td><p>−0,034</p></td>
+<td><p>3/10</p></td>
+</tr>
+<tr class="row-even"><td><p>Desenfoque</p></td>
+<td><p>σ = 1 px</p></td>
+<td><p>0,650</p></td>
+<td><p>0,615</p></td>
+<td><p>−0,035</p></td>
+<td><p>2/10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Desenfoque</p></td>
+<td><p>σ = 2 px</p></td>
+<td><p>0,221</p></td>
+<td><p>0,164</p></td>
+<td><p>−0,057</p></td>
+<td><p>1/10</p></td>
+</tr>
+<tr class="row-even"><td><p>Desenfoque</p></td>
+<td><p>σ = 4 px</p></td>
+<td><p>0,012</p></td>
+<td><p>0,011</p></td>
+<td><p>−0,001</p></td>
+<td><p>4/10</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Predicción 4: no se cumple.</strong> La ventaja de SGW no crece al reducir la escala.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contraste</p></th>
+<th class="head"><p>Interacción por grupo</p></th>
+<th class="head"><p>IC 95 %</p></th>
+<th class="head"><p>p de decisión (Holm)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>d(0,75) − d(1,0)</p></td>
+<td><p>+0,015</p></td>
+<td><p>[−0,012; 0,047]</p></td>
+<td><p>0,53</p></td>
+</tr>
+<tr class="row-odd"><td><p>d(0,50) − d(1,0)</p></td>
+<td><p>+0,004</p></td>
+<td><p>[−0,020; 0,025]</p></td>
+<td><p>0,53</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Al 50 %, los dos modelos colapsan (F1 de 0,12 a 0,14): con el lado mediano en unos 5 px, los tornillos quedan por debajo del piso c = 4 px y del paso de P2. Por eso ninguna asignación puede rescatarlos.</p>
+<p><strong>Hallazgo nuevo (exploratorio): SGW es menos robusto al desenfoque y al ruido fuerte.</strong> Con desenfoque de σ = 1–2 px pierde entre 0,035 y 0,057 más que Mask R-CNN, en 8 a 9 de 10 semillas.</p>
+<p>Una explicación coherente con el mecanismo: SGW entrena como positivas propuestas más alejadas del tornillo. El clasificador aprende así a aceptar evidencia más difusa y, con el desenfoque, produce más falsos positivos y máscaras peor delimitadas. Es una hipótesis para trabajo futuro, no algo verificado.</p>
+<p>Comparado con los 13 modelos del E2 (<code class="docutils literal notranslate"><span class="pre">data/robustez.csv</span></code>, página del modelo original en el dashboard):</p>
+<ul class="simple">
+<li><p>SGW y Mask R-CNN están entre los más robustos al ruido leve;</p></li>
+<li><p>toda la familia de dos etapas cae con el desenfoque.</p></li>
+</ul>
+</section>
+<section id="tres-conjuntos-adicionales">
+<h2>2. Tres conjuntos adicionales<a class="headerlink" href="#tres-conjuntos-adicionales" title="Link to this heading">#</a></h2>
+<p>Se registraron antes de descargarlos (tag <code class="docutils literal notranslate"><span class="pre">e3-conjuntos</span></code>). Las desviaciones que aparecieron al prepararlos se declararon antes de entrenar (protocolo §6):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Conjunto</p></th>
+<th class="head"><p>Naturaleza</p></th>
+<th class="head"><p>Imágenes (train/val/test)</p></th>
+<th class="head"><p>Objetos</p></th>
+<th class="head"><p>Área mediana</p></th>
+<th class="head"><p>Unidad estadística en test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BBBC039</p></td>
+<td><p>Núcleos en fluorescencia</p></td>
+<td><p>100 / 50 / 50</p></td>
+<td><p>23.606</p></td>
+<td><p>627 px</p></td>
+<td><p>Imagen (n = 50)</p></td>
+</tr>
+<tr class="row-odd"><td><p>NuInsSeg</p></td>
+<td><p>Núcleos en H&amp;E, 31 órganos</p></td>
+<td><p>513 / 54 / 98</p></td>
+<td><p>34.835</p></td>
+<td><p>465–819 px</p></td>
+<td><p>Imagen (n = 98); partición por órgano</p></td>
+</tr>
+<tr class="row-even"><td><p>MinneApple</p></td>
+<td><p>Manzanas en huerto</p></td>
+<td><p>547 / 89 / 34</p></td>
+<td><p>23.064</p></td>
+<td><p>486–897 px</p></td>
+<td><p>Imagen (n = 34); partición por secuencia</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p><strong>Mismo protocolo que en WDSD:</strong> SGW (κ = 0,45, c = 4) y Mask R-CNN, 3 semillas, sin ajuste por conjunto.</p></li>
+<li><p><strong>Tope de detecciones:</strong> las 100 detecciones por imagen recortan a los dos modelos en BBBC039 y NuInsSeg, que tienen hasta 364 objetos por imagen.</p></li>
+<li><p><strong>Tamaño:</strong> en los tres conjuntos los objetos son mucho más grandes que los tornillos. La hipótesis del mecanismo predice poca o ninguna ventaja: son una prueba de que SGW no empeora fuera de su nicho, más que de que mejora.</p></li>
+</ul>
+<p><strong>Resultado: el criterio de consistencia no se cumple.</strong> SGW tiene mayor F1 medio solo en NuInsSeg (1 de 3), aunque no es significativamente peor en ninguno de los tres conjuntos.</p>
+<p><strong>Tabla 8.2.</strong> SGW frente a Mask R-CNN en los conjuntos adicionales. F1 de instancia por imagen en test, promedio de 3 semillas (42–44). La diferencia es SGW − Mask R-CNN, con IC 95 % por bootstrap pareado de imágenes. Decide el mayor p ajustado por Holm sobre los 3 conjuntos (<code class="docutils literal notranslate"><span class="pre">results/conjuntos_extra/contrastes.csv</span></code>).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Conjunto</p></th>
+<th class="head"><p>n</p></th>
+<th class="head"><p>SGW</p></th>
+<th class="head"><p>Mask R-CNN</p></th>
+<th class="head"><p>Diferencia [IC 95 %]</p></th>
+<th class="head"><p>Imágenes con SGW mejor</p></th>
+<th class="head"><p>p Holm (Wilcoxon / bootstrap / t)</p></th>
+<th class="head"><p>Decisión</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BBBC039</p></td>
+<td><p>50</p></td>
+<td><p>0,867</p></td>
+<td><p>0,872</p></td>
+<td><p>−0,005 [−0,008; −0,002]</p></td>
+<td><p>5</p></td>
+<td><p>0,012 / 0,002 / 0,118</p></td>
+<td><p>No significativo (p = 0,118)</p></td>
+</tr>
+<tr class="row-odd"><td><p>NuInsSeg</p></td>
+<td><p>98</p></td>
+<td><p>0,752</p></td>
+<td><p>0,750</p></td>
+<td><p>+0,002 [−0,003; 0,007]</p></td>
+<td><p>51</p></td>
+<td><p>0,686 / 0,667 / 1,000</p></td>
+<td><p>No significativo</p></td>
+</tr>
+<tr class="row-even"><td><p>MinneApple</p></td>
+<td><p>34</p></td>
+<td><p>0,570</p></td>
+<td><p>0,576</p></td>
+<td><p>−0,006 [−0,019; 0,006]</p></td>
+<td><p>13</p></td>
+<td><p>0,686 / 0,667 / 1,000</p></td>
+<td><p>No significativo</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p><strong>Consistencia</strong> (<code class="docutils literal notranslate"><span class="pre">consistencia.json</span></code>): SGW es mejor en media en 1 de 3 conjuntos y no es significativamente peor en ninguno. Se exigían 2 de 3, así que <strong>no se cumple</strong>.</p></li>
+<li><p><strong>BBBC039:</strong> SGW pierde de forma pequeña pero sistemática (en 45 de 50 imágenes).</p>
+<ul>
+<li><p>Por imagen, Wilcoxon y bootstrap son significativos tras Holm. El t sobre 3 semillas no lo es (p = 0,118) y decide por la regla del máximo.</p></li>
+<li><p>Es coherente con la hipótesis: los núcleos de BBBC039 no son pequeños (área mediana 627 px), así que la tolerancia extra de SGW no aporta y cuesta algo de precisión.</p></li>
+</ul>
+</li>
+<li><p><strong>MinneApple:</strong> la diferencia cambia de signo entre semillas (+0,022, +0,008 y −0,050 en F1 por grupo). La variación entre semillas es mayor que la diferencia.</p></li>
+<li><p><strong>NuInsSeg:</strong> empate práctico. Por órgano, las diferencias van de −0,002 a +0,005 (<code class="docutils literal notranslate"><span class="pre">nuinsseg_por_organo.csv</span></code>).</p></li>
+<li><p><strong>Recall del tercil pequeño</strong> (exploratorio, cortes en val de cada conjunto):</p>
+<ul>
+<li><p>SGW sube en MinneApple (0,774 frente a 0,690) y en NuInsSeg (0,194 frente a 0,189), y baja en BBBC039 (0,423 frente a 0,448).</p></li>
+<li><p>En MinneApple va en la misma dirección que en WDSD, aunque no se traduce en mejor F1.</p></li>
+</ul>
+</li>
+<li><p><strong>Tiempos:</strong> la corrida de SGW en MinneApple con semilla 44 incluyó pausas del equipo y un periodo con la GPU compartida. Su tiempo de entrenamiento (244 min) no es comparable; las métricas no se ven afectadas.</p></li>
+</ul>
+<p><strong>Lectura.</strong> Fuera de WDSD, SGW no generaliza su ventaja: queda empatado con Mask R-CNN dentro de ±0,006 de F1. Como se anticipó al registrar los conjuntos, ninguno tiene objetos del tamaño de los tornillos. Esto no refuta el mecanismo, pero tampoco lo respalda como mejora general.</p>
+</section>
+<section id="calibracion-incertidumbre-eficiencia-y-errores">
+<h2>3. Calibración, incertidumbre, eficiencia y errores<a class="headerlink" href="#calibracion-incertidumbre-eficiencia-y-errores" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Calibración:</strong> el score de detección de la familia Mask R-CNN tiene un ECE de 0,04–0,06 en el E2 (temperatura y Platt en el capítulo 5 del E2). SGW comparte arquitectura; su ECE no se recalculó.</p></li>
+<li><p><strong>Incertidumbre:</strong> intervalo conforme por partición del número de tornillos por imagen, calibrado en val (93 imágenes). Al 90 % el radio es de ± 2 tornillos, con una cobertura empírica en test del 82 %, por debajo de la nominal. Val y test son escenas distintas y la intercambiabilidad no se cumple: el intervalo se muestra en el dashboard con esta advertencia.</p></li>
+<li><p><strong>Eficiencia</strong> (<code class="docutils literal notranslate"><span class="pre">results/exportacion/costo_cpu.csv</span></code>):</p>
+<ul>
+<li><p>SGW tiene el mismo costo de inferencia que Mask R-CNN: 43,9 M de parámetros y 383 GFLOPs por imagen.</p></li>
+<li><p>En CPU, con 6 hilos, la mediana es de unos 1,8–1,9 s por imagen con ONNX Runtime, frente a 2,9 s con PyTorch.</p></li>
+<li><p>El entrenamiento es un 4 % más lento.</p></li>
+</ul>
+</li>
+<li><p><strong>Errores:</strong> los diagnósticos por imagen (TP, FP y FN, y Dice frente a F1) de los 15 modelos están en la página de Modelos del dashboard.</p>
+<ul>
+<li><p>La ganancia de SGW en tornillos pequeños se concentra en el grupo 6 (capítulo 7 §3).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="07_protocolo_validacion.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">Protocolo y validación estadística</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="09_dashboard.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">Dashboard y despliegue (Bloques E y F)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#robustez-a-perturbaciones-y-a-la-escala-prediccion-4">1. Robustez a perturbaciones y a la escala (predicción 4)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tres-conjuntos-adicionales">2. Tres conjuntos adicionales</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calibracion-incertidumbre-eficiencia-y-errores">3. Calibración, incertidumbre, eficiencia y errores</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Ivan Berrio, Jose David Castillo y Jaime Besada
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
