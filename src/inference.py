@@ -1,6 +1,9 @@
 """Inferencia en CPU con ONNX Runtime sobre los artefactos exportados (artifacts/*.onnx).
 
-- Carga bajo demanda con caché de un solo modelo (functools.lru_cache): cabe en los 512 MB de Render.
+- Modo servidor (WDSD_INFERENCIA_VIVO=1, local/Docker): carga bajo demanda de un solo modelo a la vez. El pico del
+  proceso es de ~0,9 GB (medido) y no cabe en el plan gratuito de Render (512 MB); allí WDSD_INFERENCIA_VIVO=0 y el
+  mismo .onnx se ejecuta en el navegador (assets/prediccion_navegador.js). La validación y el aviso fuera de dominio
+  de este módulo se usan en los dos modos.
 - Validación de la entrada: tipo de archivo, tamaño y dimensiones; el contenido subido nunca se ejecuta.
 - Aviso fuera de dominio: distancia de Mahalanobis de rasgos simples de la imagen a los de train
   (data/ood_referencia.json; los rasgos coinciden con experiments/datos_dashboard.py:rasgos).
@@ -10,9 +13,9 @@ No importa torch: en despliegue solo hacen falta numpy, Pillow y onnxruntime.
 from __future__ import annotations
 
 import base64
+import gc
 import io
 import time
-from functools import lru_cache
 
 import numpy as np
 from PIL import Image
@@ -68,8 +71,21 @@ def fuera_de_dominio(im: Image.Image) -> dict:
             "aspecto_distinto": abs(im.size[0] / im.size[1] - W / H) > 0.05}
 
 
-@lru_cache(maxsize=1)  # un modelo a la vez: el plan gratuito de Render tiene 512 MB
+_SESION: dict = {}
+
+
 def sesion(modelo: str):
+    """Un solo modelo en memoria. Al cambiar de modelo se libera el anterior ANTES de cargar el nuevo: con
+    lru_cache(maxsize=1) el nuevo se crea mientras el viejo sigue vivo y el pico de memoria suma los dos
+    (medido con el guion de prueba de humo: 989 MB frente a 894 MB)."""
+    if modelo not in _SESION:
+        _SESION.clear()
+        gc.collect()
+        _SESION[modelo] = _crear_sesion(modelo)
+    return _SESION[modelo]
+
+
+def _crear_sesion(modelo: str):
     import onnxruntime as ort
     meta = data.modelos_onnx()[modelo]
     op = ort.SessionOptions()

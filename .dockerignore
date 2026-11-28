@@ -1,0 +1,16 @@
+# La imagen del dashboard solo copia lo que lista el Dockerfile; esto evita enviar el resto del repositorio
+# al constructor (Render o docker build) y acelera la construcción.
+.git
+.github
+**/__pycache__
+*.pyc
+book/
+tests/
+training/
+experiments/
+requirements-train.txt
+results/conjuntos_extra/
+results/exportacion/
+results/piloto/
+results/robustez/
+results/teoria/

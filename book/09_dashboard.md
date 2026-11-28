@@ -19,7 +19,7 @@ La app nunca importa `training/` ni torch: en despliegue solo usa numpy, Pillow,
 
 ## Decisiones de diseño
 
-- **Inferencia en vivo:** solo para SGW y Mask R-CNN, que caben en memoria. Se cargan bajo demanda, con una caché de un modelo (`lru_cache(maxsize=1)`), porque el plan gratuito de Render tiene 512 MB.
+- **Inferencia en vivo:** para SGW y Mask R-CNN, los dos modelos exportados a ONNX. En el despliegue gratuito corre en el navegador de quien abre el dashboard (sección «Memoria e inferencia en vivo»); en local o con Docker, en el servidor, con un solo modelo en memoria a la vez.
   - Los otros 12 modelos se muestran con resultados precalculados (capítulo 3 §4).
 - **Explicación local:** en segmentación es la máscara misma. Se muestra cada instancia con su score y un mapa de confianza (probabilidad de máscara × score).
   - Grad-CAM no es posible sobre el grafo ONNX sin gradientes. Por eso se muestran precalculados los mapas de oclusión del E2.
@@ -38,8 +38,10 @@ La app nunca importa `training/` ni torch: en despliegue solo usa numpy, Pillow,
 
 1. El repositorio en GitHub contiene `Dockerfile`, `render.yaml`, `requirements.txt` y `artifacts/`.
 2. En Render: *New → Blueprint*, elegir el repositorio; `render.yaml` crea el servicio web gratuito con *runtime* Docker y despliegue automático en cada *push* a `main`.
-3. Prueba de humo: `GET /` responde 200 y las cinco páginas cargan.
-   - El mismo control corre en CI (`tests/test_dashboard.py::test_rutas_responden`).
+3. Prueba de humo: `python experiments/prueba_humo_despliegue.py https://<servicio>.onrender.com --salida results/despliegue/prueba_humo.md`.
+   - Carga las cinco páginas, dispara los callbacks, comprueba la entrada inválida, las cabeceras COOP/COEP, onnxruntime-web y los dos `.onnx`.
+   - La predicción en el navegador se comprueba a mano: *Modelos → Sube tu imagen*, con una imagen de test.
+   - En CI corren los mismos controles sobre la app (`tests/test_dashboard.py`).
    - En local: `docker build -t wdsd-sgw . && docker run -p 8050:8050 wdsd-sgw`.
 
 **URL pública:** pendiente. El despliegue requiere la cuenta de Render del equipo.
@@ -51,17 +53,25 @@ La app nunca importa `training/` ni torch: en despliegue solo usa numpy, Pillow,
 
 ## Memoria e inferencia en vivo
 
-Una predicción con el ONNX de SGW sobre una imagen de 1280×720 usa unos 660 MB de pico en CPU (medido con `psutil`): unos 240 MB son la sesión con los pesos en FP32 y el resto, activaciones.
+Una predicción con el ONNX de SGW sobre una imagen de 1280×720 sube el proceso del servidor a unos 0,9 GB (894 MB de pico, medido con la prueba de humo):
+- unos 176 MB son los pesos: se guardan en FP16 pero ONNX Runtime los convierte a FP32 al cargar (43,9 M parámetros × 4 bytes);
+- el resto son activaciones: cada mapa del FPN a 1280×720 ocupa unos 60 MB, y las ~1000 propuestas del RPN pasan por el *RoI pooling*.
 
-Se probó a reducir la memoria:
+Se probó a reducir la memoria sin cambiar el modelo:
 - desactivar el *arena* y el patrón de memoria de ONNX Runtime;
-- usar un hilo;
-- usar optimización de grafo básica;
-- aplicar en el grafo el umbral de score, para no materializar las máscaras de 100 detecciones.
+- usar un hilo y optimización de grafo básica;
+- liberar el modelo anterior antes de cargar otro (de 989 a 894 MB).
 
-Ninguna opción baja el pico de unos 655 MB.
+Ninguna opción baja de unos 450 MB solo en ONNX Runtime, sin contar la app. Recortar las propuestas del RPN de 1000 a 150 bajaría el pico a 640 MB, pero cambia el modelo evaluado y aun así no cabe.
 
-El plan gratuito de Render tiene 512 MB. Por eso:
-- el despliegue gratuito usa `WDSD_INFERENCIA_VIVO=0`: la página de Modelos muestra la galería precalculada (SGW frente a Mask R-CNN sobre 8 imágenes de test) y explica la decisión;
-- con Docker en local, o en un plan de Render de 1 GB o más, la inferencia en vivo funciona con los mismos artefactos;
-- reducir la resolución no es alternativa: al 50 % el F1 cae a 0,14 (capítulo 8).
+El plan gratuito de Render tiene 512 MB. Por eso, en el despliegue (`WDSD_INFERENCIA_VIVO=0`), la predicción en vivo corre **en el navegador**:
+- el servidor solo entrega el mismo archivo ONNX (`/modelo/<nombre>.onnx`, 84 MB, que queda en la caché del navegador) y onnxruntime-web 1.20.1 (WebAssembly) lo ejecuta en el equipo de quien abre la página (`assets/prediccion_navegador.js`);
+- el servidor sigue validando la imagen y dando el aviso fuera de dominio;
+- las cabeceras COOP/COEP habilitan 4 hilos de WebAssembly: una predicción tarda ~4,3 s (Chromium, 4 hilos) frente a ~14 s con uno;
+- el navegador necesita ~1,3 GB de memoria libre, así que el modo está pensado para un computador, no para un teléfono.
+
+Equivalencia: sobre la imagen 14 de test a 1280×720, el navegador y el servidor dan las mismas detecciones y los mismos scores con ambos modelos (SGW: 8 tornillos; Mask R-CNN: 9). Con imágenes de otro tamaño puede haber diferencias pequeñas, porque el redimensionado a 1280×720 lo hace el *canvas* del navegador en vez de Pillow.
+
+Memoria del servidor en modo navegador: 134 MB de pico durante la prueba de humo más dos predicciones (SGW y Mask R-CNN), muy por debajo de los 512 MB.
+
+Reducir la resolución no es alternativa: al 50 % el F1 cae a 0,14 (capítulo 8).

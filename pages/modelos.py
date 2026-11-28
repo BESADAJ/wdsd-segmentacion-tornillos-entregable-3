@@ -4,7 +4,8 @@ import base64
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
-from dash import Input, Output, State, callback, dash_table, dcc, html, no_update
+from dash import (ClientsideFunction, Input, Output, State, callback, clientside_callback, dash_table, dcc, html,
+                  no_update)
 
 from src import data, explain, inference, plots
 
@@ -43,8 +44,31 @@ def opciones_modelos():
     return [{"label": n, "value": m} for m, n in zip(t.modelo, t.nombre)]
 
 
+def config_navegador() -> dict:
+    """Configuración de assets/prediccion_navegador.js. En modo servidor la función de JS no hace nada."""
+    if data.INFERENCIA_VIVO:
+        return {"modo": "servidor"}
+    conf = data.jsn("conforme.json")
+    nombres = data.tabla_maestra().set_index("modelo").nombre
+    return {
+        "modo": "navegador",
+        "ort_js": dash.get_asset_url("vendor/ort/ort.wasm.min.js"),
+        "ort_dir": dash.get_asset_url("vendor/ort/"),
+        "max_bytes": inference.MAX_BYTES,
+        "radio": conf["radio"]["0.9"],
+        "cobertura": conf["cobertura_test"]["0.9"],
+        "modelos": {m: {"url": dash.get_relative_path(f"/modelo/{m}.onnx"), "umbral": meta["umbral_score"],
+                        "nombre": nombres.get(m, m),
+                        "mb": round((data.ARTIFACTS / meta["archivo"]).stat().st_size / 2**20)}
+                    for m, meta in data.modelos_exportados().items()},
+    }
+
+
 def layout():
     onnx = data.modelos_onnx()
+    exportados = onnx or data.modelos_exportados()  # en modo navegador se predice con todos los exportados
+    mb = round(sum((data.ARTIFACTS / m["archivo"]).stat().st_size for m in exportados.values()) / 2**20 /
+               max(1, len(exportados)))
     galeria = data.jsn("galeria.json")
     conf = data.confirmatorio("friedman.json")
     rangos = data.confirmatorio("friedman_rangos.csv").set_index(data.confirmatorio("friedman_rangos.csv").columns[0])
@@ -78,25 +102,29 @@ def layout():
                 dcc.Graph(id="gal-fig"), html.Div(id="gal-texto"),
             ]),
             dbc.Tab(label="Sube tu imagen", children=[
-                dbc.Alert(["La inferencia en vivo está desactivada en este despliegue. Una predicción de SGW a "
-                           f"1280×720 en CPU usa unos {data.PICO_MEMORIA_MB} MB de memoria (240 MB de pesos más las "
-                           "activaciones), y el plan gratuito de Render tiene 512 MB. Bajar la resolución no es "
-                           "una salida: al 50 % el F1 cae a 0,14 (capítulo 8). Usa la galería precalculada, o "
-                           "ejecuta la app con Docker (", html.Code("docker run -p 8050:8050 wdsd-sgw"),
-                           "), donde la predicción en vivo funciona con los mismos artefactos ONNX."],
-                          color="info", className="mt-2") if not onnx else html.Div(),
+                dbc.Alert([html.B("La predicción corre en tu navegador. "),
+                           f"En el servidor, una predicción a 1280×720 sube la memoria a unos {data.PICO_MEMORIA_MB} "
+                           "MB y el plan gratuito de Render tiene 512 MB. Por eso este despliegue te envía el mismo "
+                           f"modelo ONNX ({mb} MB, se descarga una vez) y lo ejecuta en tu equipo con onnxruntime-web. "
+                           "Necesita un computador con Chrome, Edge o Firefox y ~1,3 GB de memoria libre; tarda "
+                           "entre 5 y 20 s. La imagen no sale de tu equipo salvo para la validación y el aviso fuera "
+                           "de dominio, que no la guardan."],
+                          color="info", className="mt-2") if not onnx and exportados else html.Div(),
                 dbc.Row([
                     dbc.Col([dbc.Label("Modelo"),
                              dcc.Dropdown(id="vivo-modelo", options=[{"label": data.tabla_maestra().set_index(
-                                 "modelo").nombre.get(m, m), "value": m} for m in onnx],
-                                 value=next(iter(onnx), None), clearable=False, disabled=not onnx)], md=4),
-                    dbc.Col(dcc.Upload(id="vivo-subir", disabled=not onnx, max_size=inference.MAX_BYTES,
+                                 "modelo").nombre.get(m, m), "value": m} for m in exportados],
+                                 value="sgw_k0.45" if "sgw_k0.45" in exportados else next(iter(exportados), None), clearable=False, disabled=not exportados)],
+                            md=4),
+                    dbc.Col(dcc.Upload(id="vivo-subir", disabled=not exportados, max_size=inference.MAX_BYTES,
                                        accept="image/png,image/jpeg,image/bmp,image/tiff",
                                        children=html.Div(["Arrastra una imagen o ", html.A("elígela"),
                                                           " (PNG/JPEG, máx. 8 MB)"]),
                                        className="border border-2 rounded p-3 text-center"), md=8),
                 ], className="mt-2"),
                 dcc.Loading(html.Div(id="vivo-salida", className="mt-2")),
+                html.Div(id="nav-resultado", className="mt-2"),
+                dcc.Store(id="nav-config", data=config_navegador()),
             ]),
         ]),
 
@@ -107,7 +135,7 @@ def layout():
         html.P("💡 En segmentación de instancias el diagnóstico equivalente a la matriz de confusión es el conteo de "
                "aciertos (TP), falsas detecciones (FP) y tornillos perdidos (FN) por imagen. Los puntos por debajo "
                "de la diagonal del Dice semántico frente al F1 de instancia son imágenes donde el modelo pinta los "
-               "píxeles correctos pero fusiona o parte tornillos.", className="small text-muted"),
+               "píxeles correctos pero fusiona o parte tornillos.", className="insight"),
 
         html.H4("Comparación estadística", className="mt-4"),
         dbc.Row([
@@ -118,7 +146,7 @@ def layout():
                             className="small text-muted")], lg=6),
             dbc.Col([dcc.Graph(figure=plots.pareto(data.tabla_maestra())),
                      html.P("💡 Mask R-CNN y SGW están en la frontera: los YOLO son 3 veces más rápidos, pero "
-                            "pierden entre 0,1 y 0,3 de F1.", className="small text-muted")], lg=6),
+                            "pierden entre 0,1 y 0,3 de F1.", className="insight")], lg=6),
         ]),
         html.H4("Interpretabilidad global (E2)", className="mt-4"),
         html.P("Mapas de oclusión de los tres mejores modelos del E2 (capítulo 5.3 del informe del E2), con "
@@ -180,6 +208,8 @@ def vivo(contenido, modelo):
             f"{od['umbral']:.1f})" + ("; además su proporción no es 16:9 y se deforma al llevarla a 1280×720"
                                      if od["aspecto_distinto"] else "") +
             ". No interpretes la predicción como confiable."], color="warning"))
+    if not data.INFERENCIA_VIVO:  # modo navegador: el modelo lo ejecuta assets/prediccion_navegador.js
+        return html.Div(avisos)
     try:
         r = inference.predecir(modelo, im)
     except Exception:  # la app no debe caerse por una entrada rara
@@ -208,6 +238,13 @@ def vivo(contenido, modelo):
                    "conteo sí tiene garantía de cobertura bajo intercambiabilidad, que entre escenas no se cumple "
                    "del todo.", className="text-muted"),
     ])
+
+
+# Modo navegador: el resultado lo pinta JS en #nav-resultado. Cambiar de modelo repite la predicción sobre la misma
+# imagen sin volver a subirla.
+clientside_callback(ClientsideFunction("wdsd", "predecir"), Output("nav-resultado", "children"),
+                    Input("vivo-subir", "contents"), Input("vivo-modelo", "value"), State("nav-config", "data"),
+                    prevent_initial_call=True)
 
 
 @callback(Output("diag-f1", "figure"), Output("diag-dice", "figure"), Input("diag-modelo", "value"))

@@ -11,5 +11,5 @@ services:
     envVars:
       - key: PORT
         value: "8050"
-      - key: WDSD_INFERENCIA_VIVO   # 0 en el plan gratuito: la inferencia usa ~660 MB y el plan tiene 512 MB
+      - key: WDSD_INFERENCIA_VIVO   # 0 = la predicción en vivo corre en el navegador (en el servidor pica ~0,9 GB; el plan da 512 MB)
         value: "0"

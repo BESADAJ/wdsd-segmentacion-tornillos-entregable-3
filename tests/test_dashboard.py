@@ -88,3 +88,47 @@ def test_consistencia_con_el_libro():
     for m in ("sgw_k0.45", "maskrcnn", "htc", "cascade", "yolov8"):
         cifra = f"{t.loc[m, 'F1_test']:.3f}".replace(".", ",")
         assert re.search(re.escape(cifra), libro), (m, cifra)
+
+
+def test_conjuntos_extra_coinciden_con_los_resultados():
+    """La tabla de conjuntos adicionales del dashboard es copia exacta de results/conjuntos_extra/contrastes.csv."""
+    import pandas as pd
+    a = pd.read_csv(RAIZ / "data" / "conjuntos_extra.csv")
+    b = pd.read_csv(RAIZ / "results" / "conjuntos_extra" / "contrastes.csv")
+    pd.testing.assert_frame_equal(a, b)
+
+
+def test_modelo_onnx_para_el_navegador(app):
+    """Modo navegador: el servidor entrega los .onnx exportados (y solo esos) con las cabeceras de aislamiento."""
+    from src import data
+    exportados = data.modelos_exportados()
+    if not exportados:
+        pytest.skip("sin artefactos ONNX")
+    c = app.server.test_client()
+    m = next(iter(exportados))
+    r = c.head(f"/modelo/{m}.onnx")
+    assert r.status_code == 200 and int(r.headers["Content-Length"]) > 50 * 2**20
+    assert c.head("/modelo/no-existe.onnx").status_code == 404
+    assert c.get("/modelo/..%2Fapp.onnx").headers["Content-Type"].startswith("text/html")  # no sale de artifacts/
+    h = c.get("/").headers
+    assert h["Cross-Origin-Opener-Policy"] == "same-origin" and h["Cross-Origin-Embedder-Policy"] == "credentialless"
+    for f, tipo in (("ort.wasm.min.js", "javascript"), ("ort-wasm-simd-threaded.mjs", "javascript"),
+                    ("ort-wasm-simd-threaded.wasm", "application/wasm")):
+        r = c.head(f"/assets/vendor/ort/{f}")
+        assert r.status_code == 200 and tipo in r.headers["Content-Type"]
+
+
+def test_config_navegador(app, monkeypatch):
+    from pages import modelos
+    from src import data
+    assert modelos.config_navegador() == {"modo": "servidor"}
+    monkeypatch.setattr(data, "INFERENCIA_VIVO", False)
+    with app.server.test_request_context("/modelos"):
+        cfg = modelos.config_navegador()
+        assert modelos.layout() is not None
+    assert cfg["modo"] == "navegador" and set(cfg["modelos"]) == set(data.modelos_exportados())
+    for m, meta in data.modelos_exportados().items():
+        assert cfg["modelos"][m]["umbral"] == meta["umbral_score"] and cfg["modelos"][m]["url"] == f"/modelo/{m}.onnx"
+    assert cfg["radio"] == data.jsn("conforme.json")["radio"]["0.9"]
+    # en modo navegador el callback de Python valida y avisa, pero no ejecuta el modelo
+    assert modelos.vivo("data:image/png;base64,xxx", "sgw_k0.45").__class__.__name__ == "Alert"

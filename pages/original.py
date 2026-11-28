@@ -64,7 +64,7 @@ def layout():
                              "tercil pequeño no pasa de 0,37 en ningún modelo."]),
                 ]),
             ], lg=6),
-            dbc.Col([html.H4("Pseudocódigo"), html.Pre(PSEUDO, className="bg-light p-2 small")], lg=6),
+            dbc.Col([html.H4("Pseudocódigo"), html.Pre(PSEUDO, className="bg-light p-2 small overflow-auto")], lg=6),
         ]),
         html.H4("Curvas de entrenamiento", className="mt-3"),
         dbc.Row([dbc.Col(dcc.Dropdown(id="cur-y", value="val_AP", clearable=False,
@@ -75,7 +75,7 @@ def layout():
                f"{res['sobreajuste']['brecha_train93_val_maskrcnn']:.3f} de Mask R-CNN (p = "
                f"{res['sobreajuste']['p_t_brecha_train93_val']:.3f}): SGW ajusta más el entrenamiento, pero la "
                f"brecha val − test es la misma ({res['sobreajuste']['brecha_val_test_sgw']:.3f} y "
-               f"{res['sobreajuste']['brecha_val_test_maskrcnn']:.3f}).", className="small text-muted"),
+               f"{res['sobreajuste']['brecha_val_test_maskrcnn']:.3f}).", className="insight"),
         html.H4("Pruebas de hipótesis (familia R3, Holm, 14 contrastes)", className="mt-3"),
         tabla(fam, {"rival": "Rival", "dif_media": "SGW − rival", "ic95_lo": "IC inf", "ic95_hi": "IC sup",
                     "p_holm_wilcoxon": "p Holm Wilcoxon", "p_holm_bootstrap": "p Holm bootstrap",
@@ -100,13 +100,21 @@ def layout():
                      tabla(pre, {"contraste": "Predicción", "dif_media_grupos": "Por grupo", "ic95_lo": "IC inf",
                                  "ic95_hi": "IC sup", "dif_media_semillas": "Todos los tornillos"})], lg=6),
         ]),
+        html.H4("Conjuntos adicionales: ¿en qué escenarios no supera?", className="mt-3"),
+        tabla(data.csv("conjuntos_extra.csv").assign(conjunto=lambda d: d.conjunto.str.upper()),
+              {"conjunto": "Conjunto", "n_imagenes": "Imágenes", "F1_SGW": "F1 SGW", "F1_MaskRCNN": "F1 Mask R-CNN",
+               "dif": "SGW − Mask R-CNN", "ic95_lo": "IC inf", "ic95_hi": "IC sup", "p_decision": "p Holm"}),
+        html.P("💡 Tres conjuntos de otros dominios (3 semillas, solo frente a Mask R-CNN). SGW empata: gana en "
+               "media solo en NuInsSeg, y ninguna diferencia es significativa tras Holm. El criterio de consistencia "
+               "(mejor en al menos 2 de 3) no se cumple. Son objetos más grandes que los tornillos, que es donde SGW "
+               "ganaba recall.", className="insight"),
         html.H4("Robustez", className="mt-3"),
         dbc.Row([dbc.Col(dcc.Dropdown(id="rob-tipo", value="escala", clearable=False,
                                       options={"escala": "Escala de la imagen (predicción 4)", "ruido": "Ruido "
                                                "gaussiano", "desenfoque": "Desenfoque gaussiano"}), md=4)]),
         dcc.Graph(id="rob-fig"),
         html.P("💡 Líneas gruesas: SGW (naranja) y Mask R-CNN (azul) con 10 semillas en la 3050; punteadas: los "
-               "13 modelos del E2 (semilla 42 o 5 semillas).", className="small text-muted"),
+               "13 modelos del E2 (semilla 42 o 5 semillas).", className="insight"),
         html.P(["Ficha completa del modelo: ", dcc.Link("Ficha del modelo", href="/ficha")]),
     ])
 

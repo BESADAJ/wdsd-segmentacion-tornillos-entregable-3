@@ -44,19 +44,26 @@ def texto(nombre: str) -> str:
     return (RAIZ / nombre).read_text(encoding="utf8")
 
 
-# Pico de memoria medido de una inferencia ONNX a 1280x720 en CPU: ~660 MB (240 MB de pesos + activaciones). No cabe en
-# los 512 MB del plan gratuito de Render: allí WDSD_INFERENCIA_VIVO=0 y la app muestra resultados precalculados.
+# Inferencia en vivo. Una predicción ONNX a 1280x720 en CPU sube el proceso a ~0,9 GB (medido con
+# experiments/prueba_humo_despliegue.py: 894 MB de pico), que no caben en los 512 MB del plan gratuito de Render. Hay
+# dos modos:
+#   - servidor (WDSD_INFERENCIA_VIVO=1, por defecto en local y en Docker): el servidor ejecuta ONNX Runtime.
+#   - navegador (WDSD_INFERENCIA_VIVO=0, en Render): el servidor solo entrega el .onnx y onnxruntime-web lo ejecuta en
+#     el navegador de quien abre el dashboard (assets/prediccion_navegador.js). Mismo archivo, mismas salidas.
 INFERENCIA_VIVO = os.environ.get("WDSD_INFERENCIA_VIVO", "1") != "0"
-PICO_MEMORIA_MB = 660
+PICO_MEMORIA_MB = 900
 
 
-def modelos_onnx() -> dict[str, dict]:
-    """Modelos exportados disponibles para inferencia en vivo: nombre -> metadata.json."""
+def modelos_exportados() -> dict[str, dict]:
+    """Modelos con artefacto ONNX presente: nombre -> metadata.json (independiente del modo de inferencia)."""
     salida = {}
-    if not INFERENCIA_VIVO:
-        return salida
     for m in sorted(ARTIFACTS.glob("*.metadata.json")):
         meta = json.loads(m.read_text(encoding="utf8"))
         if (ARTIFACTS / meta["archivo"]).exists():
             salida[meta["modelo"]] = meta
     return salida
+
+
+def modelos_onnx() -> dict[str, dict]:
+    """Modelos que el servidor ejecuta en vivo (vacío en modo navegador)."""
+    return modelos_exportados() if INFERENCIA_VIVO else {}

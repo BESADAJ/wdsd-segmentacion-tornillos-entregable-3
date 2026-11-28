@@ -32,8 +32,8 @@ def histograma_area(a: pd.DataFrame, cortes=(75.0, 156.7)) -> go.Figure:
     for split, d in a.groupby("particion"):
         f.add_histogram(x=np.log10(d.area_px.clip(lower=1)), name=split, opacity=0.6, nbinsx=50,
                         hovertemplate="log10(área)=%{x:.2f}<br>tornillos=%{y}<extra>" + split + "</extra>")
-    for c, t in zip(cortes, ("pequeño | mediano", "mediano | grande")):
-        f.add_vline(x=np.log10(c), line_dash="dash", line_color=OSCURO, annotation_text=t)
+    for c, t, pos in zip(cortes, ("pequeño | mediano", "mediano | grande"), ("top left", "top right")):
+        f.add_vline(x=np.log10(c), line_dash="dash", line_color=OSCURO, annotation_text=t, annotation_position=pos)
     f.add_vline(x=np.log10(32 ** 2), line_dash="dot", line_color=GRIS, annotation_text="COCO small (32²)")
     f.update_layout(barmode="overlay", title="Área de cada tornillo (escala log)",
                     xaxis_title="log10(área en píxeles)", yaxis_title="Número de tornillos")
@@ -101,12 +101,15 @@ def diferencia_critica(rangos: pd.Series, cd: float, destacar="sgw_k0.45", nombr
 def pareto(t: pd.DataFrame, x="latencia_GPU_ms") -> go.Figure:
     d = t.dropna(subset=[x])
     f = go.Figure()
-    f.add_scatter(x=d[x], y=d.F1_test, mode="markers+text", text=d.nombre, textposition="top center",
+    etiquetar = d.rol.isin(["Modelo original", "Baseline fuerte", "Baseline clásico"])
+    posicion = {"sgw_k0.45": "top center", "maskrcnn": "bottom left", "yolov8": "bottom center", "solov2": "middle right"}
+    f.add_scatter(x=d[x], y=d.F1_test, mode="markers+text", text=d.nombre.where(etiquetar, ""),
+                  customdata=d.nombre, textposition=[posicion.get(m, "middle right") for m in d.modelo],
                   error_y=dict(type="data", array=d.F1_test_DE, color=GRIS),
                   marker=dict(size=12, color=[COLOR_MODELO.get(m, OSCURO) for m in d.modelo],
                               symbol=["diamond" if m == "sgw_k0.45" else "circle" for m in d.modelo]),
-                  hovertemplate="%{text}<br>F1 = %{y:.3f}<br>%{x:.1f}<extra></extra>")
-    f.update_xaxes(type="log")
+                  hovertemplate="%{customdata}<br>F1 = %{y:.3f}<br>%{x:.1f}<extra></extra>")
+    f.update_xaxes(type="log", range=[np.log10(18), np.log10(330)], tickvals=[20, 30, 50, 100, 200, 300], ticktext=["20", "30", "50", "100", "200", "300"])
     f.update_layout(title="Desempeño frente a costo (frontera de Pareto)", yaxis_title="F1 por grupo en test",
                     xaxis_title="Latencia mediana en GPU, ms por imagen (escala log)")
     return f
