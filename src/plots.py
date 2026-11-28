@@ -6,16 +6,30 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 
-# Paleta limitada: azul oscuro (texto y modelos en general), naranja (SGW), azul (Mask R-CNN),
-# verde (anotación real) y gris (resto). El naranja/azul se distinguen también por forma o patrón.
+# Paleta limitada (5 colores, la misma de assets/style.css): tinta (texto y modelos en general), naranja (SGW),
+# azul (Mask R-CNN), verde (anotación real) y gris (resto). El naranja/azul se distinguen también por forma o patrón.
 OSCURO, SGW, MRCNN, REAL, GRIS = "#2C3E50", "#E67E22", "#2980B9", "#18BC9C", "#95A5A6"
 COLOR_MODELO = {"sgw_k0.45": SGW, "maskrcnn": MRCNN}
+# Particiones: tres tonos de la tinta, para no confundirlas con los modelos (el naranja queda para SGW) y que se
+# distingan también por luminosidad (daltonismo, proyector).
+PARTICION = {"train": "#AEB6BF", "val": "#5D6D7E", "test": OSCURO}
+ORDEN_PARTICION = ["train", "val", "test"]
+TEXTO_2, REJILLA = "#5D6D7E", "#E9EDF1"
 
+# Plantilla única: tipografía de la app, tamaños legibles desde un proyector, coma decimal y leyenda arriba.
 pio.templates["wdsd"] = go.layout.Template(layout=dict(
-    font=dict(family="Lato, Segoe UI, sans-serif", size=13, color=OSCURO),
-    colorway=[OSCURO, SGW, MRCNN, REAL, GRIS], paper_bgcolor="white", plot_bgcolor="white",
-    xaxis=dict(gridcolor="#ECF0F1", zeroline=False), yaxis=dict(gridcolor="#ECF0F1", zeroline=False),
-    margin=dict(l=60, r=20, t=50, b=50), hoverlabel=dict(font_size=12), title=dict(x=0.02)))
+    font=dict(family="Lato, Segoe UI, sans-serif", size=14, color=OSCURO),
+    title=dict(x=0, xref="container", xanchor="left", y=0.98, yanchor="top", pad=dict(l=4), font=dict(size=16, color=OSCURO, weight=700)),
+    colorway=[OSCURO, SGW, MRCNN, REAL, GRIS], paper_bgcolor="white", plot_bgcolor="white", separators=",.",
+    xaxis=dict(gridcolor=REJILLA, zeroline=False, linecolor="#C9D1D9", ticks="outside", tickcolor="#C9D1D9",
+               tickfont=dict(size=13, color=TEXTO_2), title=dict(font=dict(size=14), standoff=10), automargin=True),
+    yaxis=dict(gridcolor=REJILLA, zeroline=False, linecolor="#C9D1D9", tickfont=dict(size=13, color=TEXTO_2),
+               title=dict(font=dict(size=14), standoff=10), automargin=True),
+    legend=dict(orientation="h", x=0, xanchor="left", y=1.0, yanchor="bottom", font=dict(size=13),
+                bgcolor="rgba(0,0,0,0)", title=dict(text="")),
+    margin=dict(l=8, r=16, t=72, b=8), hoverlabel=dict(font_size=13, bgcolor="white", bordercolor="#C9D1D9",
+                                                      font=dict(color=OSCURO)),
+    colorscale=dict(sequential=[[0, "#F6F8FA"], [1, OSCURO]])))
 pio.templates.default = "wdsd"
 
 
@@ -29,8 +43,10 @@ def vacia(mensaje: str) -> go.Figure:
 # ----------------------------------------------------------------------------------------------- EDA
 def histograma_area(a: pd.DataFrame, cortes=(75.0, 156.7)) -> go.Figure:
     f = go.Figure()
-    for split, d in a.groupby("particion"):
-        f.add_histogram(x=np.log10(d.area_px.clip(lower=1)), name=split, opacity=0.6, nbinsx=50,
+    for split in [p for p in ORDEN_PARTICION if p in set(a.particion)]:
+        d = a[a.particion == split]
+        f.add_histogram(x=np.log10(d.area_px.clip(lower=1)), name=split, opacity=0.8, nbinsx=50,
+                        marker_color=PARTICION[split],
                         hovertemplate="log10(área)=%{x:.2f}<br>tornillos=%{y}<extra>" + split + "</extra>")
     for c, t, pos in zip(cortes, ("pequeño | mediano", "mediano | grande"), ("top left", "top right")):
         f.add_vline(x=np.log10(c), line_dash="dash", line_color=OSCURO, annotation_text=t, annotation_position=pos)
@@ -42,15 +58,16 @@ def histograma_area(a: pd.DataFrame, cortes=(75.0, 156.7)) -> go.Figure:
 
 def histograma_conteo(i: pd.DataFrame) -> go.Figure:
     f = go.Figure()
-    for split, d in i.groupby("particion"):
-        f.add_histogram(x=d.n_tornillos, name=split, opacity=0.6, xbins=dict(size=1))
+    for split in [p for p in ORDEN_PARTICION if p in set(i.particion)]:
+        d = i[i.particion == split]
+        f.add_histogram(x=d.n_tornillos, name=split, opacity=0.8, xbins=dict(size=1), marker_color=PARTICION[split])
     f.update_layout(barmode="overlay", title="Tornillos por imagen", xaxis_title="Tornillos en la imagen",
                     yaxis_title="Número de imágenes")
     return f
 
 
 def mapa_centros(a: pd.DataFrame) -> go.Figure:
-    f = go.Figure(go.Histogram2d(x=a.cx, y=a.cy, nbinsx=32, nbinsy=18, colorscale="Blues",
+    f = go.Figure(go.Histogram2d(x=a.cx, y=a.cy, nbinsx=32, nbinsy=18, colorscale=[[0, "#FFFFFF"], [0.15, "#D5DBE1"], [1, OSCURO]],
                                  colorbar=dict(title="tornillos"),
                                  hovertemplate="x=%{x}<br>y=%{y}<br>tornillos=%{z}<extra></extra>"))
     f.update_yaxes(autorange="reversed", scaleanchor="x", title="y (px)")
@@ -60,19 +77,27 @@ def mapa_centros(a: pd.DataFrame) -> go.Figure:
 
 def brillo_por_particion(i: pd.DataFrame) -> go.Figure:
     f = go.Figure()
-    for split, d in i.groupby("particion"):
-        f.add_box(y=d.brillo, name=split, boxpoints="outliers", marker_color=OSCURO)
+    for split in [p for p in ORDEN_PARTICION if p in set(i.particion)]:
+        d = i[i.particion == split]
+        f.add_box(y=d.brillo, name=split, boxpoints="outliers", marker_color=PARTICION[split],
+                  line=dict(color=OSCURO, width=1.5), fillcolor=PARTICION[split])
     f.update_layout(title="Brillo medio de la imagen por partición (cambio de distribución)",
                     yaxis_title="Brillo medio (0–255)", showlegend=False)
     return f
 
 
-def dispersion(df: pd.DataFrame, x: str, y: str, color: str | None) -> go.Figure:
+def dispersion(df: pd.DataFrame, x: str, y: str, color: str | None, etiquetas: dict | None = None) -> go.Figure:
+    et = etiquetas or {}
     f = go.Figure()
-    grupos = df.groupby(color) if color else [("todas", df)]
+    if color == "particion":
+        grupos = [(k, df[df.particion == k]) for k in ORDEN_PARTICION if k in set(df.particion)]
+    else:
+        grupos = df.groupby(color) if color else [("todas", df)]
     for k, d in grupos:
-        f.add_scattergl(x=d[x], y=d[y], mode="markers", name=str(k), marker=dict(size=5, opacity=0.6))
-    f.update_layout(title=f"{y} frente a {x}", xaxis_title=x, yaxis_title=y)
+        f.add_scattergl(x=d[x], y=d[y], mode="markers", name=str(k),
+                        marker=dict(size=6, opacity=0.65, color=PARTICION.get(k) if color == "particion" else None))
+    f.update_layout(title=f"{et.get(y, y)} frente a {et.get(x, x)}", xaxis_title=et.get(x, x),
+                    yaxis_title=et.get(y, y))
     return f
 
 

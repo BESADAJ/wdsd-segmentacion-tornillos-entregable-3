@@ -59,24 +59,25 @@ navbar = dbc.NavbarSimple(
     ],
     brand="WDSD · segmentación de tornillos",
     brand_href="/",
-    color="primary",
-    dark=True,
+    color="white",
+    dark=False,
+    fluid=True,
+    expand="lg",  # en tablet, menú plegable: los cinco enlaces no caben en una línea
     sticky="top",
+    className="wdsd-nav",
 )
 
 pie = html.Footer(
-    dbc.Container([
-        html.Hr(),
-        html.Small([
-            f"Versión {VERSION} · actualizado {ACTUALIZADO} · Ivan Berrio, Jose David Castillo y Jaime Besada · ",
-            "Privacidad: las imágenes que subes se procesan en memoria y no se guardan ni se registran. ",
-            "Datos: WEEE Disassembly Screw Dataset (VCL, CERTH-ITI), sin licencia declarada: uso académico.",
-        ], className="text-muted"),
-    ], fluid=True),
-    className="mb-3",
+    html.Div([
+        f"Versión {VERSION} · actualizado {ACTUALIZADO} · Ivan Berrio, Jose David Castillo y Jaime Besada · ",
+        "Privacidad: las imágenes que subes se procesan en memoria y no se guardan ni se registran. ",
+        "Datos: WEEE Disassembly Screw Dataset (VCL, CERTH-ITI), sin licencia declarada: uso académico.",
+    ], className="reticula"),
+    className="pie",
 )
 
-app.layout = html.Div([navbar, dbc.Container(dash.page_container, fluid=True, className="pt-3 mx-auto", style={"maxWidth": "1400px"}), pie])
+# Una sola retícula (assets/style.css: .reticula) para la barra, el contenido y el pie.
+app.layout = html.Div([navbar, html.Main(dash.page_container, className="reticula"), pie])
 
 if __name__ == "__main__":
     app.run(debug=False)

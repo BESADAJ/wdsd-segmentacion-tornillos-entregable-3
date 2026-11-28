@@ -8,4 +8,4 @@ dash.register_page(__name__, path="/ficha", name="Ficha del modelo", title="Fich
 
 
 def layout():
-    return html.Div([dcc.Markdown(data.texto("MODEL_CARD.md"), className="ficha")], style={"maxWidth": "900px"})
+    return html.Div([dcc.Markdown(data.texto("MODEL_CARD.md"), className="ficha")])

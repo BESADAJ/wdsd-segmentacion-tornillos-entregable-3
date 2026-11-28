@@ -31,6 +31,7 @@ La app nunca importa `training/` ni torch: en despliegue solo usa numpy, Pillow,
   - los errores se muestran con `dbc.Alert`;
   - las imágenes subidas no se guardan ni se registran;
   - no se exponen rutas ni credenciales.
+- **Identidad visual:** tema FLATLY con cinco colores (tinta, naranja solo para SGW, azul para Mask R-CNN, verde para la anotación real y gris), una retícula de 1280 px para barra, contenido y pie, tarjetas con la interpretación junto a cada gráfico y una plantilla Plotly única con coma decimal y tamaños legibles en proyector (`assets/style.css`, `src/ui.py`, `src/plots.py`). Las particiones usan tonos de la tinta para no confundirse con los modelos.
 - **Accesibilidad:** el naranja de SGW y el azul de Mask R-CNN también se distinguen por la forma del marcador y por el trazo; las imágenes tienen texto alternativo.
 - **Consistencia con el informe:** `tests/test_dashboard.py` verifica que las cifras de la tabla maestra coinciden con `results/confirmatorio` y con el capítulo 7.
 
