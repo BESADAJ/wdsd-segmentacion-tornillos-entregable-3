@@ -95,10 +95,23 @@ def _crear_sesion(modelo: str):
     return ort.InferenceSession(str(data.ARTIFACTS / meta["archivo"]), op, providers=["CPUExecutionProvider"])
 
 
+def redimensionar(im: Image.Image) -> Image.Image:
+    """Lleva la imagen a la entrada del modelo (1280x720, bilineal de Pillow). Única definición del redimensionado:
+    la usan el modo servidor y el modo navegador, para que los dos vean exactamente los mismos píxeles."""
+    return im.resize((W, H), Image.BILINEAR)
+
+
+def png_entrada(im: Image.Image) -> str:
+    """Modo navegador: la imagen ya redimensionada, como data URL PNG (sin pérdida) para onnxruntime-web."""
+    b = io.BytesIO()
+    redimensionar(im).save(b, format="PNG", compress_level=1)
+    return "data:image/png;base64," + base64.b64encode(b.getvalue()).decode()
+
+
 def predecir(modelo: str, im: Image.Image) -> dict:
     meta = data.modelos_onnx()[modelo]
     original = im.size
-    x = np.asarray(im.resize((W, H), Image.BILINEAR), dtype=np.float32).transpose(2, 0, 1) / 255.0
+    x = np.asarray(redimensionar(im), dtype=np.float32).transpose(2, 0, 1) / 255.0
     t0 = time.perf_counter()
     cajas, _, scores, mascaras = sesion(modelo).run(None, {"imagen": x})
     ms = (time.perf_counter() - t0) * 1000

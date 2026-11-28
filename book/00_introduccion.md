@@ -46,4 +46,4 @@
 | 10 | Conclusiones |
 | 11 | Reproducibilidad |
 
-**Dashboard:** URL pública en Render, pendiente de desplegar (capítulo 9).
+**Dashboard:** https://wdsd-segmentacion-tornillos-entregable-3.onrender.com (Render, plan gratuito; capítulo 9).
